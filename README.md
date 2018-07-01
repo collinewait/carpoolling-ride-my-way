@@ -1,2 +1,2 @@
-# carpoolling-ride-my-way [![Build Status](https://travis-ci.org/collinewait/carpoolling-ride-my-way.svg?branch=develop)](https://travis-ci.org/collinewait/carpoolling-ride-my-way)
+# carpoolling-ride-my-way [![Build Status](https://travis-ci.org/collinewait/carpoolling-ride-my-way.svg?branch=develop)](https://travis-ci.org/collinewait/carpoolling-ride-my-way)[![Coverage Status](https://coveralls.io/repos/github/collinewait/carpoolling-ride-my-way/badge.svg)](https://coveralls.io/github/collinewait/carpoolling-ride-my-way)
 Ride-my App is a carpooling application that provides drivers with the ability to create ride offers  and passengers to join available ride offers
