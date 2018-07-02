@@ -19,7 +19,7 @@ class DatabaseAccess(object):
         connection = psycopg2.connect(
             "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         )
-        print "connected to the database"
+        print("connected to the database")
         return connection
 
     @staticmethod
@@ -73,13 +73,13 @@ class DatabaseAccess(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            print "cursor obtained"
+            print("cursor obtained")
             for command in commands:
                 cur.execute(command)
-                print "command executed"
+                print ("command executed")
             cur.close()
             conn.commit()
-            print "command committed"
+            print("command committed")
         except (Exception, psycopg2.DatabaseError) as error:
             print error
         finally:
