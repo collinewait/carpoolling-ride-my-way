@@ -17,6 +17,6 @@ APP.env = ENVIRONMENT
 APP.errorhandler(404)(ErrorHandler.url_not_found)
 
 Urls.generate_url(APP)
-DatabaseAccess.create_tables()
+DatabaseAccess.create_tables(APP)
 
 CORS(APP)

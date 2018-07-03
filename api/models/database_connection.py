@@ -8,29 +8,37 @@ class DatabaseAccess(object):
     This class contains methods to create a database connection
     and database table creation
     """
+    APP = None
 
-    @staticmethod
-    def database_connection():
+    @classmethod
+    def database_connection(cls):
         """
         This method creates a connection to the databse
         "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         :retun: connection
         """
+        app = cls.APP
+        if not app.config['TESTING']:
+            connection = psycopg2.connect(
+                "dbname='carpooldb' user='carpooldb12' host='localhost' password='carpooldb12' port='5432'"
+            )
+            print("connected to the database")
+            return connection
         connection = psycopg2.connect(
-            "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
+                "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         )
-        print("connected to the database")
+        print("connected to the test database")
         return connection
 
-    @staticmethod
-    def create_tables():
+    @classmethod
+    def create_tables(cls, app):
         """
         This method creates tables in the PostgreSQL database.
         It conects to the databse and creates tables one by one
         for command in commands:
                 cur.execute(command)
         """
-
+        cls.APP = app
         commands = (
             """
             DROP TABLE IF EXISTS "user" CASCADE;
