@@ -30,12 +30,9 @@ class User(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            print("cursor obtained")
             cur.execute(sql, (self.public_id, self.first_name, self.last_name,
                               self.email_address, self.phone_number, self.password))
-            print("executed")
             conn.commit()
-            print("commited")
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -54,14 +51,10 @@ class User(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            print("cursor obtained")
             cur.execute("""SELECT "email_address" FROM "user" WHERE "email_address" = %s""",
                         (email_address,))
             print("The email obtained")
             email = cur.fetchone()
-            print cur.fetchmany()
-            print("row obtained")
-            print(email)
 
             if email:
                 print(email)
