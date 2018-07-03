@@ -41,7 +41,7 @@ class User(object):
                 conn.close()
 
     @staticmethod
-    def get_public_id(public_id):
+    def get_user_by_email(email_address):
         """
         This method filters a user by email address.
         :param email_address:
@@ -51,12 +51,12 @@ class User(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            cur.execute("""SELECT "public_id" FROM "user" WHERE "public_id" = %s""",
-                        (public_id,))
-            email = cur.fetchone()
+            cur.execute("""SELECT * FROM "user" WHERE "email_address" = %s""",
+                        (email_address,))
+            user = cur.fetchone()
 
-            if email:
-                return(email)
+            if user:
+                return(user)
             return None
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:

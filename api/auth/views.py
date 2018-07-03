@@ -3,7 +3,7 @@ This module handles user account creation and
 user authentication
 """
 import uuid
-from flask import request, jsonify, make_response
+from flask import request, jsonify
 from flask.views import MethodView
 from werkzeug.security import generate_password_hash
 from api.models.user import User
@@ -44,9 +44,9 @@ class RegisterUser(MethodView):
             phone_number = post_data['phone_number']
             hashed_password = generate_password_hash(post_data['password'], method='sha256')
 
-            user_public_id = User.get_public_id(public_id)
+            user_turple = User.get_user_by_email(email_address)
 
-            if not user_public_id:
+            if not user_turple:
                 new_user = User(public_id, first_name, last_name,
                                 email_address, phone_number, hashed_password)
                 User.save(new_user)
@@ -55,3 +55,4 @@ class RegisterUser(MethodView):
             return jsonify({"error_message": 'Failed, User already exists,' +
                                              'Please sign In'}), 400
         return jsonify({'error_message': 'Failed Content-type must be json'}), 400
+    
