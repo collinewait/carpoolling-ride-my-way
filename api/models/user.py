@@ -30,12 +30,12 @@ class User(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            print "cursor obtained"
+            print("cursor obtained")
             cur.execute(sql, (self.public_id, self.first_name, self.last_name,
                               self.email_address, self.phone_number, self.password))
-            print "executed"
+            print("executed")
             conn.commit()
-            print "commited"
+            print("commited")
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
