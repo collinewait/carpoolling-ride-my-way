@@ -2,10 +2,11 @@
 This module handels requests to urls.
 """
 from api.views import RideViews
+from api.auth.views import RegisterUser
 
 class Urls(object):
     """
-   Class to generate urls
+    Class to generate urls
     """
     @staticmethod
     def generate_url(app):
@@ -26,3 +27,6 @@ class Urls(object):
 
         app.add_url_rule('/api/v1/rides/<int:ride_id>/requests',
                          view_func=ride_view, methods=['POST',])
+
+        app.add_url_rule('/api/v1/auth/signup/', view_func=RegisterUser.as_view('register_user'),
+                         methods=["POST",])

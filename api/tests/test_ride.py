@@ -32,7 +32,7 @@ class TestRideTestCase(TestCase):
         "Mukon", depart_date, depart_time, 4
     )
 
-    request = Request(1, 1, user1.first_name, user1.user_id, user1.phone_number)
+    request = Request(1, 1, user1.first_name, user1.public_id, user1.phone_number)
 
     def setUp(self):
         """Define test variables and initialize app."""
@@ -185,7 +185,7 @@ class TestRideTestCase(TestCase):
         This method tests that data is not sent with empty fields
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            dict(passenger_name="", passenger_id=self.user_test.user_id,
+            dict(passenger_name="", passenger_id=self.user_test.public_id,
                  passenger_contact=self.user_test.phone_number
                 )), content_type='application/json')
 
