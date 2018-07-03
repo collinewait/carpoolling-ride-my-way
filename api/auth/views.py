@@ -3,7 +3,7 @@ This module handles user account creation and
 user authentication
 """
 import uuid
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from flask.views import MethodView
 from werkzeug.security import generate_password_hash
 from api.models.user import User
@@ -36,6 +36,7 @@ class RegisterUser(MethodView):
             if not all(user_condition):
                 return RidesHandler.fields_missing_info()
 
+            public_id = str(uuid.uuid4)
             post_data = request.get_json()
             first_name = post_data['first_name']
             last_name = post_data['last_name']
@@ -43,10 +44,10 @@ class RegisterUser(MethodView):
             phone_number = post_data['phone_number']
             hashed_password = generate_password_hash(post_data['password'], method='sha256')
 
-            user = User.get_by_email(email_address)
+            user_public_id = User.get_public_id(public_id)
 
-            if not user:
-                new_user = User(str(uuid.uuid4), first_name, last_name,
+            if not user_public_id:
+                new_user = User(public_id, first_name, last_name,
                                 email_address, phone_number, hashed_password)
                 User.save(new_user)
                 return jsonify({'message': 'Successfully registered',

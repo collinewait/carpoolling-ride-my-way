@@ -41,7 +41,7 @@ class User(object):
                 conn.close()
 
     @staticmethod
-    def get_by_email(email_address):
+    def get_public_id(public_id):
         """
         This method filters a user by email address.
         :param email_address:
@@ -51,14 +51,11 @@ class User(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            cur.execute("""SELECT "email_address" FROM "user" WHERE "email_address" = %s""",
-                        (email_address,))
-            print("The email obtained")
+            cur.execute("""SELECT "public_id" FROM "user" WHERE "public_id" = %s""",
+                        (public_id,))
             email = cur.fetchone()
 
             if email:
-                print(email)
-                print("row sent")
                 return(email)
             return None
             cur.close()
