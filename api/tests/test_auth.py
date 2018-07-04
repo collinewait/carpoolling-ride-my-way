@@ -101,11 +101,10 @@ class TestUserAuthTestCase(TestCase):
             )),
             content_type='application/json'
         )
-        data = json.loads(response.data)
 
-        self.assertTrue(data['status'] == 'success')
-        self.assertTrue(data['message'] == 'Successfully logged in.')
-        self.assertTrue(data['auth_token'])
+        self.assertTrue(response.json['status'] == 'success')
+        self.assertTrue(response.json['message'] == 'Successfully logged in.')
+        self.assertTrue(response.json['auth_token'])
         self.assertTrue(response.content_type == 'application/json')
         self.assertEqual(response.status_code, 200)
 
