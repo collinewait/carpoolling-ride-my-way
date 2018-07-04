@@ -101,7 +101,6 @@ class TestUserAuthTestCase(TestCase):
             )),
             content_type='application/json'
         )
-        print response.data
         data = json.loads(response.data)
 
         self.assertTrue(data['status'] == 'success')
