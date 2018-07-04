@@ -2,7 +2,7 @@
 This module handels requests to urls.
 """
 from api.views import RideViews
-from api.auth.views import RegisterUser
+from api.auth.views import RegisterUser, LoginUser
 
 class Urls(object):
     """
@@ -29,4 +29,6 @@ class Urls(object):
                          view_func=ride_view, methods=['POST',])
 
         app.add_url_rule('/api/v1/auth/signup/', view_func=RegisterUser.as_view('register_user'),
+                         methods=["POST",])
+        app.add_url_rule('/api/v1/auth/login/', view_func=LoginUser.as_view('login_user'),
                          methods=["POST",])
