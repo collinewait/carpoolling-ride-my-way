@@ -24,12 +24,10 @@ class TestRideTestCase(TestCase):
     user2 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
 
     ride1 = Ride(
-        1, user1.first_name, user1.last_name,
-        "Ntinda", depart_date, depart_time, 2
+        1, "Ntinda", depart_date, depart_time, 2
     )
     ride2 = Ride(
-        2, user2.first_name, user2.last_name,
-        "Mukon", depart_date, depart_time, 4
+        2, "Mukon", depart_date, depart_time, 4
     )
 
     request = Request(1, 1, user1.first_name, user1.public_id, user1.phone_number)
@@ -67,7 +65,7 @@ class TestRideTestCase(TestCase):
         self.assertIn("ride", response.json)
         self.assertIn("result retrieved successfully", response.json["message"])
         self.assertIsInstance(response.json['ride'], dict)
-        self.assertEqual(len(response.json['ride']), 7)
+        self.assertEqual(len(response.json['ride']), 6)
 
     def test_ride_attributes_returned(self):
         """
@@ -75,8 +73,6 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().get('/api/v1/rides/1')
         self.assertIn(1, response.json['ride'].values())
-        self.assertIn("Colline", response.json['ride']["driver_firstname"])
-        self.assertIn("Wait", response.json['ride']["driver_lastname"])
         self.assertIn("Ntinda", response.json['ride']["destination"])
         self.assertEqual(2, response.json['ride']["number_of_passengers"])
         self.assertEqual(self.depart_date, response.json['ride']["departure_date"])
@@ -135,8 +131,8 @@ class TestRideTestCase(TestCase):
         This method tests that data is not sent with empty fields
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
-            dict(driver_firstname=self.user1.first_name,
-                 driver_lastname=self.user1.last_name, destination="Mbarara",
+            dict(user_id=2,
+                 destination="Mbarara",
                  departure_date="", departure_time="",
                  number_of_passengers=2)), content_type='application/json')
 
@@ -150,9 +146,8 @@ class TestRideTestCase(TestCase):
         on creating a ride offer
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
-            dict(driver_firstname=self.user1.first_name,
-                 driver_lastname=self.user1.last_name, destination="Mbarara",
-                 number_of_passengers=2)), content_type='application/json')
+            dict(destination="Mbarara", number_of_passengers=2)),
+                                      content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])

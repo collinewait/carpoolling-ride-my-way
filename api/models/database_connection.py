@@ -25,7 +25,7 @@ class DatabaseAccess(object):
             print("connected to the database")
             return connection
         connection = psycopg2.connect(
-                "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
+            "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         )
         print("connected to the test database")
         return connection
