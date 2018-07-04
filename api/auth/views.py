@@ -3,8 +3,6 @@ This module handles user account creation and
 user authentication
 """
 import uuid
-import datetime
-import jwt
 from flask import request, jsonify, make_response
 from flask.views import MethodView
 from werkzeug.security import generate_password_hash, check_password_hash
