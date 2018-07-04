@@ -8,6 +8,7 @@ from flask.views import MethodView
 from werkzeug.security import generate_password_hash, check_password_hash
 from api.models.user import User
 from api.models.rides import  RidesHandler
+from api.models.database_transaction import DbTransaction
 
 
 class RegisterUser(MethodView):
@@ -44,12 +45,19 @@ class RegisterUser(MethodView):
             phone_number = post_data['phone_number']
             hashed_password = generate_password_hash(post_data['password'], method='sha256')
 
-            user_turple = User.get_user_by_email(email_address)
+            query = """SELECT * FROM "user" WHERE "email_address" = %s"""
+            user_turple = DbTransaction.retrieve_one(query, (email_address, ))
 
             if not user_turple:
                 new_user = User(public_id, first_name, last_name,
                                 email_address, phone_number, hashed_password)
-                User.save(new_user)
+
+                sql = """INSERT INTO "user"(public_id, first_name, last_name, email_address,
+                 phone_number, password)
+                VALUES(%s, %s, %s, %s, %s, %s);"""
+                data = (public_id, first_name, last_name,
+                        email_address, phone_number, hashed_password)
+                DbTransaction.save(sql, data)
                 return jsonify({'message': 'Successfully registered',
                                 "user": new_user.__dict__}), 201
             return jsonify({"error_message": 'Failed, User already exists,' +
@@ -73,12 +81,14 @@ class LoginUser(MethodView):
 
         if not post_data or not post_data['email_address'] or not post_data['password']:
             return jsonify({"status": "Missing email address or password",
-                                 'Message': 'All Login details required'}), 401
-        user = User.get_user_by_email(post_data['email_address'])
+                            'Message': 'All Login details required'}), 401
+
+        query = """SELECT * FROM "user" WHERE "email_address" = %s"""
+        user = DbTransaction.retrieve_one(query, (post_data['email_address'], ))
 
         if not user:
             return jsonify({"status": "Incorrect Email address",
-                                 'Message': 'Please enter valid Email address'}), 401
+                            'Message': 'Please enter valid Email address'}), 401
         if check_password_hash(user[6], post_data['password']):
             auth_token = User.encode_token(user[1])
             if auth_token:
@@ -95,5 +105,5 @@ class LoginUser(MethodView):
             return make_response(jsonify(response)), 400
 
         return jsonify({"status": "Incorrect password",
-                                 'Message': 'Please enter correct password'}), 401
+                        'Message': 'Please enter correct password'}), 401
     
