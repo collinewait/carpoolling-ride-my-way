@@ -86,29 +86,6 @@ class TestUserAuthTestCase(TestCase):
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])
 
-    def test_user_login(self):
-        """
-        Test for login of a registered user
-        """
-        self.client().post('/api/v1/auth/signup/', data=json.dumps(
-            self.user1.__dict__), content_type='application/json')
-
-        response = self.client().post(
-            '/api/v1/auth/login/',
-            data=json.dumps(dict(
-                email_address=self.user1.email_address,
-                password=self.user1.password
-            )),
-            content_type='application/json'
-        )
-
-        self.assertTrue(response.json['status'] == 'success')
-        self.assertTrue(response.json['message'] == 'Successfully logged in.')
-        self.assertTrue(response.json['auth_token'])
-        self.assertTrue(response.content_type == 'application/json')
-        self.assertEqual(response.status_code, 200)
-
-
 
     def tearDown(self):
         sql_commands = (
