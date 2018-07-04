@@ -1,7 +1,9 @@
 """
 This module is a ride model with its attributes
 """
+import datetime
 import psycopg2
+import jwt
 from api.models.database_connection import DatabaseAccess
 
 
@@ -39,9 +41,42 @@ class User(object):
         finally:
             if conn is not None:
                 conn.close()
+    @staticmethod
+    def encode_token(public_id):
+        """
+        Generates the Auth Token
+        :return: string
+        """
+        from api import APP
+        try:
+            token = jwt.encode({"public_id": public_id,
+                                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+                               APP.secret_key)
+            return token
+        except Exception as e:
+            return e
 
     @staticmethod
-    def get_public_id(public_id):
+    def decode_token(auth_token):
+        """
+        Decodes the auth token and returns the user public id
+        :param auth_token:
+        :return:
+        """
+        from api import APP
+        try:
+            token = jwt.decode(auth_token, APP.config.get("SECRET_KEY"))
+            return {"public_id": token["public_id"],
+                    "state": "Success"}
+        except jwt.ExpiredSignatureError:
+            return {"error_message": "Signature expired. Please log in again.",
+                    "state": "Failure"}
+        except jwt.InvalidTokenError:
+            return {"error_message": "Invalid token. Please log in again.",
+                    "state": "Failure"}
+
+    @staticmethod
+    def get_user_by_email(email_address):
         """
         This method filters a user by email address.
         :param email_address:
@@ -51,12 +86,12 @@ class User(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            cur.execute("""SELECT "public_id" FROM "user" WHERE "public_id" = %s""",
-                        (public_id,))
-            email = cur.fetchone()
+            cur.execute("""SELECT * FROM "user" WHERE "email_address" = %s""",
+                        (email_address,))
+            user = cur.fetchone()
 
-            if email:
-                return(email)
+            if user:
+                return(user)
             return None
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
