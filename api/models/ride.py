@@ -9,10 +9,12 @@ class Ride(object):
     """
 
     def __init__(self, *args):
-        self.ride_id = args[0]
-        self.driver_firstname = args[1]
-        self.driver_lastname = args[2]
-        self.destination = args[3]
-        self.departure_date = args[4]
-        self.departure_time = args[5]
-        self.number_of_passengers = args[6]
+        self.user_id = args[0]
+        self.destination = args[1]
+        self.departure_date = args[2]
+        self.departure_time = args[3]
+        self.number_of_passengers = args[4]
+        if len(args) > 5:
+            self.ride_id = args[5]
+        else:
+            self.ride_id = None

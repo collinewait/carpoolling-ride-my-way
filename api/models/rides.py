@@ -46,15 +46,14 @@ class RidesHandler(object):
         It takes control from the post() method
         :return
         """
-        keys = ("driver_firstname", "driver_lastname", "destination",
-                "departure_date", "departure_time", "number_of_passengers")
+        keys = ("user_id", "destination", "departure_date",
+                "departure_time", "number_of_passengers")
         if not set(keys).issubset(set(request.json)):
             return self.request_missing_fields()
 
         request_condition = [
-            request.json["driver_firstname"], request.json["driver_lastname"],
-            request.json["destination"], request.json["departure_date"],
-            request.json["departure_time"],
+            request.json["user_id"], request.json["destination"],
+            request.json["departure_date"], request.json["departure_time"],
             request.json["number_of_passengers"]
             ]
 
@@ -62,13 +61,12 @@ class RidesHandler(object):
             return self.fields_missing_info()
 
         ride = Ride(
-            len(self.rides) + 1,
-            request.json['driver_firstname'],
-            request.json['driver_lastname'],
+            request.json['user_id'],
             request.json['destination'],
             request.json['departure_date'],
             request.json['departure_time'],
-            request.json['number_of_passengers']
+            request.json['number_of_passengers'],
+            len(self.rides) + 1
             )
         self.rides.append(ride)
         return jsonify({"status_code": 201, "ride": ride.__dict__,
