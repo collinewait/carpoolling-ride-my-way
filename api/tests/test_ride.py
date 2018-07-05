@@ -232,9 +232,9 @@ class TestRideTestCase(TestCase):
 
     def test_api_gets_all_ride_requests(self):
         """
-        Test API can get all ride offers (GET request).
+        Test API can get all ride requests (GET request).
         """
-        response = self.client().get('/api/v1/users/rides/1/')
+        response = self.client().get('/api/v1/users/rides/1/requests')
         self.assertEqual(response.status_code, 200)
         self.assertIn("result retrieved successfully", response.json["message"])
 

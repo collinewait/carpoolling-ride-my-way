@@ -32,5 +32,5 @@ class Urls(object):
                          methods=["POST",])
         app.add_url_rule('/api/v1/auth/login/', view_func=LoginUser.as_view('login_user'),
                          methods=["POST",])
-        app.add_url_rule('/api/v1/users/rides/<int:ride_id>/', view_func=RequestView.as_view('all_requests'),
+        app.add_url_rule('/api/v1/users/rides/<int:ride_id>/requests', view_func=RequestView.as_view('all_requests'),
                          methods=["GET",])
