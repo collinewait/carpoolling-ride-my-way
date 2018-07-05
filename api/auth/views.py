@@ -37,20 +37,15 @@ class RegisterUser(MethodView):
             if not all(user_condition):
                 return RidesHandler.fields_missing_info()
 
-            public_id = str(uuid.uuid4)
             post_data = request.get_json()
-            first_name = post_data['first_name']
-            last_name = post_data['last_name']
-            email_address = post_data['email_address']
-            phone_number = post_data['phone_number']
             hashed_password = generate_password_hash(post_data['password'], method='sha256')
 
             query = """SELECT * FROM "user" WHERE "email_address" = %s"""
-            user_turple = DbTransaction.retrieve_one(query, (email_address, ))
+            user_turple = DbTransaction.retrieve_one(query, (post_data['email_address'], ))
 
             if not user_turple:
-                new_user = User(public_id, first_name, last_name,
-                                email_address, phone_number, hashed_password)
+                new_user = User(str(uuid.uuid4), post_data['first_name'], post_data['last_name'],
+                                post_data['email_address'], post_data['phone_number'], hashed_password)
 
                 user_sql = """INSERT INTO "user"(public_id, first_name, last_name, email_address,
                  phone_number, password)

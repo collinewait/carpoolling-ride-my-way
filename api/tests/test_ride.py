@@ -90,8 +90,6 @@ class TestRideTestCase(TestCase):
         self.assertIsInstance(response.json['rides'], list)
         self.assertTrue(response.json["rides"])
         self.assertIsInstance(response.json["rides"][0], dict)
-        self.assertIn(1, response.json["rides"][0].values())
-        self.assertIn(2, response.json["rides"][1].values())
         self.assertIn("results retrieved successfully", response.json["message"])
 
     def test_get_one_ride_offer(self):

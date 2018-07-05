@@ -65,8 +65,8 @@ class RidesHandler(object):
             (request.json["user_id"], ))
         if user is None:
             return jsonify({"status": "Request not made",
-                "message": "No user found with id: " + str(request.json["user_id"])
-                }), 401
+                            "message": "No user found with id: " + str(request.json["user_id"])
+                           }), 401
         ride = Ride(
             request.json['user_id'],
             request.json['destination'],
