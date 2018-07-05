@@ -23,8 +23,8 @@ class TestRideTestCase(TestCase):
     depart_time = date_time.strftime("%H:%M")
 
     user_test = User(123, "Jack", "Ma", "jack@ma.com", "0771462657", "1234")
-    user1 = User(1234, "Colline", "Wait", "coll@wait.com", "0771462657", "1234")
-    user2 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
+    user11 = User(1234, "Colline", "Wait", "coll@wait.com", "0771462657", "1234")
+    user12 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
 
     ride1 = Ride(
         1, "Ntinda", depart_date, depart_time, 2
@@ -34,8 +34,8 @@ class TestRideTestCase(TestCase):
     )
 
     request = Request(1, 1)
-    request1 = Request(2,1)
-    request2 = Request(1,1)
+    request1 = Request(2, 1)
+    request2 = Request(1, 1)
 
     user1 = User(str(uuid.uuid4), "coco", "wait",
                  "col@stev.com", "0772587", "123111")
@@ -61,12 +61,27 @@ class TestRideTestCase(TestCase):
         self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
             self.request2.__dict__), content_type='application/json')
 
+    def generate_token(self):
+        """
+        This method gets a token to be used for authentication when
+        making requests.
+        """
+        response = self.client().post(
+            '/api/v1/auth/login/',
+            data=json.dumps(dict(
+                email_address=self.user1.email_address,
+                password=self.user1.password
+            )),
+            content_type='application/json'
+        )
+        return response.json["auth_token"]
 
     def test_api_gets_all_ride_offers(self):
         """
         Test API can get all ride offers (GET request).
         """
-        response = self.client().get('/api/v1/rides/')
+        response = self.client().get('/api/v1/rides/',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json['rides'], list)
         self.assertTrue(response.json["rides"])
@@ -80,7 +95,8 @@ class TestRideTestCase(TestCase):
         Test an item (a ride) is returned on a get request.
         (GET request)
         """
-        response = self.client().get('/api/v1/rides/1')
+        response = self.client().get('/api/v1/rides/1',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIn("ride", response.json)
         self.assertIn("result retrieved successfully", response.json["message"])
@@ -91,7 +107,8 @@ class TestRideTestCase(TestCase):
         """
         Test that all values expected  in a ride dictionary are returned
         """
-        response = self.client().get('/api/v1/rides/1')
+        response = self.client().get('/api/v1/rides/1',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertIn(1, response.json['ride'].values())
         self.assertIn("Ntinda", response.json['ride']["destination"])
         self.assertEqual(2, response.json['ride']["number_of_passengers"])
@@ -103,7 +120,8 @@ class TestRideTestCase(TestCase):
         Test API returns nothing when a ride is not found
         A return contsins a status code of 200
         """
-        response = self.client().get('/api/v1/rides/20')
+        response = self.client().get('/api/v1/rides/20',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No ride available with id: 20", response.json['message'])
 
