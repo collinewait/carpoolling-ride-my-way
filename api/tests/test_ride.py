@@ -4,10 +4,12 @@ This module contains tests for the api end points.
 from unittest import TestCase
 from datetime import datetime
 from flask import json
+import psycopg2
 from api import APP
 from api.models.user import User
 from api.models.ride import Ride
 from api.models.request import Request
+from api.models.database_connection import DatabaseAccess
 
 
 class TestRideTestCase(TestCase):
@@ -34,8 +36,10 @@ class TestRideTestCase(TestCase):
 
     def setUp(self):
         """Define test variables and initialize app."""
+        APP.config['TESTING'] = True
         self.app = APP
         self.client = self.app.test_client
+        DatabaseAccess.create_tables(APP)
         self.client().post('/api/v1/rides/', data=json.dumps(
             self.ride1.__dict__), content_type='application/json')
         self.client().post('/api/v1/rides/', data=json.dumps(
@@ -211,3 +215,22 @@ class TestRideTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])
+
+    def tearDown(self):
+        sql_commands = (
+            """DROP TABLE IF EXISTS "user" CASCADE;""",
+            """DROP TABLE IF EXISTS "ride" CASCADE;""",
+            """DROP TABLE IF EXISTS "request" CASCADE;""")
+        conn = None
+        try:
+            conn = DatabaseAccess.database_connection()
+            cur = conn.cursor()
+            for sql_command in sql_commands:
+                cur.execute(sql_command)
+            cur.close()
+            conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                conn.close()
