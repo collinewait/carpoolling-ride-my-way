@@ -52,12 +52,12 @@ class RegisterUser(MethodView):
                 new_user = User(public_id, first_name, last_name,
                                 email_address, phone_number, hashed_password)
 
-                sql = """INSERT INTO "user"(public_id, first_name, last_name, email_address,
+                user_sql = """INSERT INTO "user"(public_id, first_name, last_name, email_address,
                  phone_number, password)
                 VALUES(%s, %s, %s, %s, %s, %s);"""
-                data = (public_id, first_name, last_name,
-                        email_address, phone_number, hashed_password)
-                DbTransaction.save(sql, data)
+                data = (new_user.public_id, new_user.first_name, new_user.last_name,
+                        new_user.email_address, new_user.phone_number, new_user.password)
+                DbTransaction.save(user_sql, data)
                 return jsonify({'message': 'Successfully registered',
                                 "user": new_user.__dict__}), 201
             return jsonify({"error_message": 'Failed, User already exists,' +

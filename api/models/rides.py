@@ -5,6 +5,7 @@ on the API end points
 from flask import jsonify, request
 from api.models.ride import Ride
 from api.models.request import Request
+from api.models.database_transaction import DbTransaction
 
 
 class RidesHandler(object):
@@ -68,6 +69,19 @@ class RidesHandler(object):
             request.json['number_of_passengers'],
             len(self.rides) + 1
             )
+
+        ride_sql = """INSERT INTO "ride"(user_id, destination, departure_date, departure_time,
+                 number_of_passengers)
+                VALUES((%s), %s, %s, %s, %s);"""
+        db_user_id = DbTransaction.retrieve_one(
+            """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
+            (ride.user_id, ))
+        ride_data = (
+            db_user_id,
+            ride.destination, ride.departure_date,
+            ride.departure_time, ride.number_of_passengers
+            )
+        DbTransaction.save(ride_sql, ride_data)
         self.rides.append(ride)
         return jsonify({"status_code": 201, "ride": ride.__dict__,
                         "message": "Ride added successfully"}), 201
