@@ -63,3 +63,30 @@ class DbTransaction(object):
         finally:
             if conn is not None:
                 conn.close()
+
+    @staticmethod
+    def retrieve_all(sql, data):
+        """
+        This module gets a single row from the database depending on the
+        recieved sql command and the data.
+        returns the row
+        :param:sql
+        :param:data
+        :return:row
+        """
+        list_tuple = []
+        conn = None
+        try:
+            conn = DatabaseAccess.database_connection()
+            cur = conn.cursor()
+            cur.execute(sql, data)
+            rows = cur.fetchall()
+            for row in rows:
+                list_tuple.append(row)
+            cur.close()
+            return list_tuple
+        except (Exception, psycopg2.DatabaseError) as error:
+           print(error)
+        finally:
+            if conn is not None:
+                conn.close()

@@ -1,6 +1,7 @@
 """
 This module contains tests for the api end points.
 """
+import uuid
 from unittest import TestCase
 from datetime import datetime
 from flask import json
@@ -33,6 +34,13 @@ class TestRideTestCase(TestCase):
     )
 
     request = Request(1, 1)
+    request1 = Request(2,1)
+    request2 = Request(1,1)
+
+    user1 = User(str(uuid.uuid4), "coco", "wait",
+                 "col@stev.com", "0772587", "123111")
+    user2 = User(str(uuid.uuid4), "colline", "wait",
+                 "colline@rec.com", "0772587", "12311")
 
     def setUp(self):
         """Define test variables and initialize app."""
@@ -40,10 +48,18 @@ class TestRideTestCase(TestCase):
         self.app = APP
         self.client = self.app.test_client
         DatabaseAccess.create_tables(APP)
+        self.client().post('/api/v1/auth/signup/', data=json.dumps(
+            self.user1.__dict__), content_type='application/json')
+        self.client().post('/api/v1/auth/signup/', data=json.dumps(
+            self.user2.__dict__), content_type='application/json')
         self.client().post('/api/v1/rides/', data=json.dumps(
             self.ride1.__dict__), content_type='application/json')
         self.client().post('/api/v1/rides/', data=json.dumps(
             self.ride2.__dict__), content_type='application/json')
+        self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
+            self.request1.__dict__), content_type='application/json')
+        self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
+            self.request2.__dict__), content_type='application/json')
 
 
     def test_api_gets_all_ride_offers(self):
@@ -213,6 +229,14 @@ class TestRideTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])
+
+    def test_api_gets_all_ride_requests(self):
+        """
+        Test API can get all ride offers (GET request).
+        """
+        response = self.client().get('/api/v1/users/rides/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("result retrieved successfully", response.json["message"])
 
     def tearDown(self):
         sql_commands = (

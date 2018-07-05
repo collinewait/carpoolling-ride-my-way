@@ -4,6 +4,7 @@ This module provides responses to url requests.
 from flask import jsonify, request
 from flask.views import MethodView
 from api.models.rides import RidesHandler
+from api.models.requests import RequestModel
 
 
 class RideViews(MethodView):
@@ -42,3 +43,17 @@ class RideViews(MethodView):
             return self.rides_handler.post_request_to_ride_offer(ride_id)
 
         return self.rides_handler.post_ride_offer()
+
+
+class RequestView(MethodView):
+    """
+    This class handles url endpoints for requests.
+    """
+    request_model = RequestModel()
+
+    def get(self, ride_id):
+        """
+        This class gets all requests made on a ride offer
+        """
+
+        return self.request_model.return_all_requests(ride_id)
