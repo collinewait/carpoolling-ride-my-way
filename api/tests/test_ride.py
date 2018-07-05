@@ -53,13 +53,17 @@ class TestRideTestCase(TestCase):
         self.client().post('/api/v1/auth/signup/', data=json.dumps(
             self.user2.__dict__), content_type='application/json')
         self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride1.__dict__), content_type='application/json')
+            self.ride1.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride2.__dict__), content_type='application/json')
+            self.ride2.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
-            self.request1.__dict__), content_type='application/json')
+            self.request1.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
-            self.request2.__dict__), content_type='application/json')
+            self.request2.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
 
     def generate_token(self):
         """
@@ -145,7 +149,8 @@ class TestRideTestCase(TestCase):
         (POST request)
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride1.__dict__), content_type='application/json')
+            self.ride1.__dict__), content_type='application/json',
+                                headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("ride", response.json)
@@ -158,7 +163,8 @@ class TestRideTestCase(TestCase):
         This method tests that non json data is not sent
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride1.__dict__), content_type='text/plain')
+            self.ride1.__dict__), content_type='text/plain',
+                                      headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
@@ -172,7 +178,8 @@ class TestRideTestCase(TestCase):
             dict(user_id=2,
                  destination="Mbarara",
                  departure_date="", departure_time="",
-                 number_of_passengers=2)), content_type='application/json')
+                 number_of_passengers=2)), content_type='application/json',
+                 headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
@@ -185,7 +192,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
             dict(destination="Mbarara", number_of_passengers=2)),
-                                      content_type='application/json')
+                                      content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])
@@ -197,7 +205,8 @@ class TestRideTestCase(TestCase):
         """
 
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request.__dict__), content_type='application/json')
+            self.request.__dict__), content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("request", response.json)
@@ -209,7 +218,8 @@ class TestRideTestCase(TestCase):
         This method tests that non json request is not sent
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request.__dict__), content_type='text/plain')
+            self.request.__dict__), content_type='text/plain',
+            headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("content not JSON", response.json['error_message'])
 
@@ -218,7 +228,8 @@ class TestRideTestCase(TestCase):
         This method tests that data is not sent with empty fields
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            dict(user_id="", ride_id="")), content_type='application/json')
+            dict(user_id="", ride_id="")), content_type='application/json',
+            headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
@@ -231,7 +242,8 @@ class TestRideTestCase(TestCase):
         found
         """
         response = self.client().post('/api/v1/rides/22/requests', data=json.dumps(
-            self.request.__dict__), content_type='application/json')
+            self.request.__dict__), content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No ride available with id: 22", response.json['message'])
@@ -243,7 +255,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
             dict(passenger_contact=self.user_test.phone_number)),
-                                      content_type='application/json')
+                                      content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])

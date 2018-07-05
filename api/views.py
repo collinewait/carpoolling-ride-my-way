@@ -26,7 +26,6 @@ class RideViews(MethodView):
         try:
 
             token = request.headers.get('auth_token')
-            print token
             if not token:
                 return jsonify({"message": "Token is missing"}), 401
 
@@ -49,12 +48,24 @@ class RideViews(MethodView):
         and saves a request to a ride if ride_id is set
         :return:
         """
-        if not request or not request.json:
-            return jsonify({"status_code": 400, "data": str(request.data),
-                            "error_message": "content not JSON"}), 400
-        if ride_id:
-            return self.rides_handler.post_request_to_ride_offer(ride_id)
-        return self.rides_handler.post_ride_offer()
+        try:
+
+            token = request.headers.get('auth_token')
+            if not token:
+                return jsonify({"message": "Token is missing"}), 401
+
+            decoded = User.decode_token(request.headers.get('auth_token'))
+            if decoded["state"] == "Failure":
+                return jsonify({"message": decoded["message"]}), 401
+            if not request or not request.json:
+                return jsonify({"status_code": 400, "data": str(request.data),
+                                "error_message": "content not JSON"}), 400
+            if ride_id:
+                return self.rides_handler.post_request_to_ride_offer(ride_id)
+            return self.rides_handler.post_ride_offer()
+        except KeyError as k:
+            return jsonify({"message": "invalid token",
+                            "error_message": k}), 401
 
 
 class RequestView(MethodView):
