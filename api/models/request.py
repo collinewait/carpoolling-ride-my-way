@@ -8,10 +8,8 @@ class Request(object):
     This class represents a Request entity
     """
 
-    def __init__(self, *args):
-        self.request_id = args[0]
-        self.ride_id = args[1]
-        self.passenger_name = args[2]
-        self.passenger_id = args[3]
-        self.passenger_contact = args[4]
+    def __init__(self, user_id, ride_id, request_id=None):
+        self.user_id = user_id
+        self.ride_id = ride_id
+        self.request_id = request_id
         

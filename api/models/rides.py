@@ -92,14 +92,13 @@ class RidesHandler(object):
         It takes control from the post() method
         :return
         """
-        request_keys = ("passenger_name", "passenger_id", "passenger_contact")
+        request_keys = ("user_id", "ride_id")
         if not set(request_keys).issubset(set(request.json)):
             return self.request_missing_fields()
 
         ride_request = [
-            request.json["passenger_name"],
-            request.json["passenger_id"],
-            request.json["passenger_contact"]
+            request.json["user_id"],
+            request.json["ride_id"]
         ]
 
         if not all(ride_request):
@@ -108,12 +107,20 @@ class RidesHandler(object):
         for ride in self.rides:
             if ride.ride_id == ride_id:
                 ride_request = Request(
-                    len(self.requests) + 1,
-                    ride_id,
-                    request.json['passenger_name'],
-                    request.json['passenger_id'],
-                    request.json['passenger_contact']
+                    request.json["user_id"],
+                    request.json["ride_id"],
+                    len(self.requests) + 1
                 )
+                ride_sql = """INSERT INTO "request"(user_id, ride_id)
+                    VALUES((%s), (%s));"""
+                db_user_id = DbTransaction.retrieve_one(
+                    """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
+                    (ride_request.user_id, ))
+                db_ride_id = DbTransaction.retrieve_one(
+                    """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
+                    (ride_request.ride_id, ))
+                request_data = (db_user_id, db_ride_id)
+                DbTransaction.save(ride_sql, request_data)
                 self.requests.append(ride_request.__dict__)
                 return jsonify({"Status code": 201, "request": ride_request.__dict__,
                                 "message": "request sent successfully"}), 201
