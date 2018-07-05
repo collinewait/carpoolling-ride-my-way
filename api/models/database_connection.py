@@ -55,10 +55,10 @@ class DatabaseAccess(object):
             CREATE TABLE "ride" (
                     ride_id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
-                    destination VARCHAR(255)  UNIQUE,
+                    destination VARCHAR(255),
                     departure_date VARCHAR(50) NOT NULL,
                     departure_time VARCHAR(50) NOT NULL,
-                    number_of_passengers VARCHAR(50) UNIQUE NOT NULL,
+                    number_of_passengers VARCHAR(50)  NULL,
                     FOREIGN KEY (user_id)
                     REFERENCES "user" (user_id)
                 )

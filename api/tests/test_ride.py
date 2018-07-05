@@ -103,7 +103,7 @@ class TestRideTestCase(TestCase):
         self.assertIn("ride", response.json)
         self.assertIn("result retrieved successfully", response.json["message"])
         self.assertIsInstance(response.json['ride'], dict)
-        self.assertEqual(len(response.json['ride']), 6)
+        self.assertEqual(len(response.json['ride']), 7)
 
     def test_ride_attributes_returned(self):
         """
@@ -113,7 +113,7 @@ class TestRideTestCase(TestCase):
                                      headers=({"auth_token": self.generate_token()}))
         self.assertIn(1, response.json['ride'].values())
         self.assertIn("Ntinda", response.json['ride']["destination"])
-        self.assertEqual(2, response.json['ride']["number_of_passengers"])
+        self.assertEqual('2', response.json['ride']["number_of_passengers"])
         self.assertEqual(self.depart_date, response.json['ride']["departure_date"])
         self.assertEqual(self.depart_time, response.json['ride']["departure_time"])
 

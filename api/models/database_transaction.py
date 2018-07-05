@@ -54,7 +54,7 @@ class DbTransaction(object):
             row = cur.fetchone()
             cur.close()
 
-            if row:
+            if row and not "":
                 return row
             return None
 
@@ -65,7 +65,7 @@ class DbTransaction(object):
                 conn.close()
 
     @staticmethod
-    def retrieve_all(sql, data):
+    def retrieve_all(sql, data=None):
         """
         This module gets a single row from the database depending on the
         recieved sql command and the data.
@@ -79,7 +79,10 @@ class DbTransaction(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            cur.execute(sql, data)
+            if data is not None:
+                cur.execute(sql, data)
+            else:
+                cur.execute(sql)
             rows = cur.fetchall()
             for row in rows:
                 list_tuple.append(row)
