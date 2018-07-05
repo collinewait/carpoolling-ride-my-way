@@ -23,8 +23,8 @@ class TestRideTestCase(TestCase):
     depart_time = date_time.strftime("%H:%M")
 
     user_test = User(123, "Jack", "Ma", "jack@ma.com", "0771462657", "1234")
-    user1 = User(1234, "Colline", "Wait", "coll@wait.com", "0771462657", "1234")
-    user2 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
+    user11 = User(1234, "Colline", "Wait", "coll@wait.com", "0771462657", "1234")
+    user12 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
 
     ride1 = Ride(
         1, "Ntinda", depart_date, depart_time, 2
@@ -34,8 +34,8 @@ class TestRideTestCase(TestCase):
     )
 
     request = Request(1, 1)
-    request1 = Request(2,1)
-    request2 = Request(1,1)
+    request1 = Request(2, 1)
+    request2 = Request(1, 1)
 
     user1 = User(str(uuid.uuid4), "coco", "wait",
                  "col@stev.com", "0772587", "123111")
@@ -53,26 +53,43 @@ class TestRideTestCase(TestCase):
         self.client().post('/api/v1/auth/signup/', data=json.dumps(
             self.user2.__dict__), content_type='application/json')
         self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride1.__dict__), content_type='application/json')
+            self.ride1.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride2.__dict__), content_type='application/json')
+            self.ride2.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
-            self.request1.__dict__), content_type='application/json')
+            self.request1.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
-            self.request2.__dict__), content_type='application/json')
+            self.request2.__dict__), content_type='application/json',
+                           headers=({"auth_token": self.generate_token()}))
 
+    def generate_token(self):
+        """
+        This method gets a token to be used for authentication when
+        making requests.
+        """
+        response = self.client().post(
+            '/api/v1/auth/login/',
+            data=json.dumps(dict(
+                email_address=self.user1.email_address,
+                password=self.user1.password
+            )),
+            content_type='application/json'
+        )
+        return response.json["auth_token"]
 
     def test_api_gets_all_ride_offers(self):
         """
         Test API can get all ride offers (GET request).
         """
-        response = self.client().get('/api/v1/rides/')
+        response = self.client().get('/api/v1/rides/',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json['rides'], list)
         self.assertTrue(response.json["rides"])
         self.assertIsInstance(response.json["rides"][0], dict)
-        self.assertIn(1, response.json["rides"][0].values())
-        self.assertIn(2, response.json["rides"][1].values())
         self.assertIn("results retrieved successfully", response.json["message"])
 
     def test_get_one_ride_offer(self):
@@ -80,7 +97,8 @@ class TestRideTestCase(TestCase):
         Test an item (a ride) is returned on a get request.
         (GET request)
         """
-        response = self.client().get('/api/v1/rides/1')
+        response = self.client().get('/api/v1/rides/1',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIn("ride", response.json)
         self.assertIn("result retrieved successfully", response.json["message"])
@@ -91,7 +109,8 @@ class TestRideTestCase(TestCase):
         """
         Test that all values expected  in a ride dictionary are returned
         """
-        response = self.client().get('/api/v1/rides/1')
+        response = self.client().get('/api/v1/rides/1',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertIn(1, response.json['ride'].values())
         self.assertIn("Ntinda", response.json['ride']["destination"])
         self.assertEqual(2, response.json['ride']["number_of_passengers"])
@@ -103,7 +122,8 @@ class TestRideTestCase(TestCase):
         Test API returns nothing when a ride is not found
         A return contsins a status code of 200
         """
-        response = self.client().get('/api/v1/rides/20')
+        response = self.client().get('/api/v1/rides/20',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No ride available with id: 20", response.json['message'])
 
@@ -127,7 +147,8 @@ class TestRideTestCase(TestCase):
         (POST request)
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride1.__dict__), content_type='application/json')
+            self.ride1.__dict__), content_type='application/json',
+                                headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("ride", response.json)
@@ -140,7 +161,8 @@ class TestRideTestCase(TestCase):
         This method tests that non json data is not sent
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
-            self.ride1.__dict__), content_type='text/plain')
+            self.ride1.__dict__), content_type='text/plain',
+                                      headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
@@ -154,7 +176,8 @@ class TestRideTestCase(TestCase):
             dict(user_id=2,
                  destination="Mbarara",
                  departure_date="", departure_time="",
-                 number_of_passengers=2)), content_type='application/json')
+                 number_of_passengers=2)), content_type='application/json',
+                 headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
@@ -167,7 +190,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
             dict(destination="Mbarara", number_of_passengers=2)),
-                                      content_type='application/json')
+                                      content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])
@@ -179,7 +203,8 @@ class TestRideTestCase(TestCase):
         """
 
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request.__dict__), content_type='application/json')
+            self.request.__dict__), content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("request", response.json)
@@ -191,7 +216,8 @@ class TestRideTestCase(TestCase):
         This method tests that non json request is not sent
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request.__dict__), content_type='text/plain')
+            self.request.__dict__), content_type='text/plain',
+            headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("content not JSON", response.json['error_message'])
 
@@ -200,7 +226,8 @@ class TestRideTestCase(TestCase):
         This method tests that data is not sent with empty fields
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            dict(user_id="", ride_id="")), content_type='application/json')
+            dict(user_id="", ride_id="")), content_type='application/json',
+            headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
@@ -213,7 +240,8 @@ class TestRideTestCase(TestCase):
         found
         """
         response = self.client().post('/api/v1/rides/22/requests', data=json.dumps(
-            self.request.__dict__), content_type='application/json')
+            self.request.__dict__), content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No ride available with id: 22", response.json['message'])
@@ -225,7 +253,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
             dict(passenger_contact=self.user_test.phone_number)),
-                                      content_type='application/json')
+                                      content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("some of these fields are missing",
                          response.json['error_message'])
@@ -234,7 +263,8 @@ class TestRideTestCase(TestCase):
         """
         Test API can get all ride requests (GET request).
         """
-        response = self.client().get('/api/v1/users/rides/1/requests')
+        response = self.client().get('/api/v1/users/rides/1/requests',
+                                   headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIn("result retrieved successfully", response.json["message"])
 

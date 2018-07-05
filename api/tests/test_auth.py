@@ -126,3 +126,4 @@ class TestUserAuthTestCase(TestCase):
         finally:
             if conn is not None:
                 conn.close()
+                

@@ -22,12 +22,10 @@ class DatabaseAccess(object):
             connection = psycopg2.connect(
                 "dbname='carpooldb' user='carpooldb12' host='localhost' password='carpooldb12' port='5432'"
             )
-            print("connected to the database")
             return connection
         connection = psycopg2.connect(
             "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         )
-        print("connected to the test database")
         return connection
 
     @classmethod
@@ -81,13 +79,10 @@ class DatabaseAccess(object):
         try:
             conn = DatabaseAccess.database_connection()
             cur = conn.cursor()
-            print("cursor obtained")
             for command in commands:
                 cur.execute(command)
-                print ("command executed")
             cur.close()
             conn.commit()
-            print("command committed")
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
         finally:

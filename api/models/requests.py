@@ -13,7 +13,6 @@ class RequestModel(object):
     made on rides
     """
 
-    request_list = []
     def return_all_requests(self, ride_id):
         """
         This method returns all requests made on a ride offer made
@@ -23,12 +22,11 @@ class RequestModel(object):
         confirm_ride_id = DbTransaction.retrieve_one(
             """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
             (ride_id, ))
- 
+
         if confirm_ride_id:
             request_sql = """SELECT "user".first_name, request.* FROM "request" LEFT JOIN "user" ON(request.user_id = "user".user_id) WHERE "ride_id" = %s"""
             requests_turple_list = DbTransaction.retrieve_all(request_sql, (ride_id,))
-
-     
+            request_list = []
             for request_tuple in requests_turple_list:
                 request_dict = {
                     "first_name": request_tuple[0],
@@ -36,8 +34,8 @@ class RequestModel(object):
                     "user_id": request_tuple[2],
                     "ride_id": request_tuple[3]
                 }
-                self.request_list.append(request_dict)
+                request_list.append(request_dict)
 
             return jsonify({"message": "result retrieved successfully",
-                            "requests": self.request_list}), 200
+                            "requests": request_list}), 200
         return RidesHandler.no_ride_available(ride_id)

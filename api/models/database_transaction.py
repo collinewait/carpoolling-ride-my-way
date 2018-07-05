@@ -59,7 +59,7 @@ class DbTransaction(object):
             return None
 
         except (Exception, psycopg2.DatabaseError) as error:
-           print(error)
+            print(error)
         finally:
             if conn is not None:
                 conn.close()
@@ -86,7 +86,8 @@ class DbTransaction(object):
             cur.close()
             return list_tuple
         except (Exception, psycopg2.DatabaseError) as error:
-           print(error)
+            print(error)
         finally:
             if conn is not None:
                 conn.close()
+                

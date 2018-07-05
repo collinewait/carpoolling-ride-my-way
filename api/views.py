@@ -5,6 +5,7 @@ from flask import jsonify, request
 from flask.views import MethodView
 from api.models.rides import RidesHandler
 from api.models.requests import RequestModel
+from api.models.user import User
 
 
 class RideViews(MethodView):
@@ -22,10 +23,23 @@ class RideViews(MethodView):
         :param ride_id: Ride id
         :return:
         """
-        if not ride_id:
-            return self.rides_handler.return_all_rides()
+        try:
 
-        return self.rides_handler.return_single_ride(ride_id)
+            token = request.headers.get('auth_token')
+            if not token:
+                return jsonify({"message": "Token is missing"}), 401
+
+            decoded = User.decode_token(request.headers.get('auth_token'))
+            if decoded["state"] == "Failure":
+                return jsonify({"message": decoded["error_message"]}), 401
+
+            if not ride_id:
+                return self.rides_handler.return_all_rides()
+
+            return self.rides_handler.return_single_ride(ride_id)
+        except KeyError as k:
+            return jsonify({"message": "invalid token",
+                            "error_message": k}), 401
 
     def post(self, ride_id):
         """"
@@ -34,15 +48,24 @@ class RideViews(MethodView):
         and saves a request to a ride if ride_id is set
         :return:
         """
-        if not request or not request.json:
-            return jsonify({"status_code": 400, "data": str(request.data),
-                            "error_message": "content not JSON"}), 400
+        try:
 
-        if ride_id:
-
-            return self.rides_handler.post_request_to_ride_offer(ride_id)
-
-        return self.rides_handler.post_ride_offer()
+            token = request.headers.get('auth_token')
+            if not token:
+                return jsonify({"message": "Token is missing"}), 401
+            
+            decoded = User.decode_token(request.headers.get('auth_token'))
+            if decoded["state"] == "Failure":
+                return jsonify({"message": decoded["error_message"]}), 401
+            if not request or not request.json:
+                return jsonify({"status_code": 400, "data": str(request.data),
+                                "error_message": "content not JSON"}), 400
+            if ride_id:
+                return self.rides_handler.post_request_to_ride_offer(ride_id)
+            return self.rides_handler.post_ride_offer()
+        except KeyError as k:
+            return jsonify({"message": "invalid token",
+                            "error_message": k}), 401
 
 
 class RequestView(MethodView):
@@ -55,5 +78,14 @@ class RequestView(MethodView):
         """
         This class gets all requests made on a ride offer
         """
-
-        return self.request_model.return_all_requests(ride_id)
+        try:
+            token = request.headers.get('auth_token')
+            if not token:
+                return jsonify({"message": "Token is missing"}), 401
+            decoded = User.decode_token(request.headers.get('auth_token'))
+            if decoded["state"] == "Failure":
+                return jsonify({"message": decoded["error_message"]}), 401
+            return self.request_model.return_all_requests(ride_id)
+        except KeyError as k:
+            return jsonify({"message": "invalid token",
+                            "error_message": k}), 401

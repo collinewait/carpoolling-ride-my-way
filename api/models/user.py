@@ -29,8 +29,8 @@ class User(object):
                                 "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
                                APP.secret_key)
             return token
-        except Exception as e:
-            return e
+        except Exception as error:
+            return error
 
     @staticmethod
     def decode_token(auth_token):
