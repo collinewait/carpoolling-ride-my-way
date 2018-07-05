@@ -265,7 +265,8 @@ class TestRideTestCase(TestCase):
         """
         Test API can get all ride requests (GET request).
         """
-        response = self.client().get('/api/v1/users/rides/1/requests')
+        response = self.client().get('/api/v1/users/rides/1/requests',
+                                   headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIn("result retrieved successfully", response.json["message"])
 

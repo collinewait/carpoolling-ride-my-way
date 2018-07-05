@@ -78,5 +78,14 @@ class RequestView(MethodView):
         """
         This class gets all requests made on a ride offer
         """
-
-        return self.request_model.return_all_requests(ride_id)
+        try:
+            token = request.headers.get('auth_token')
+            if not token:
+                return jsonify({"message": "Token is missing"}), 401
+            decoded = User.decode_token(request.headers.get('auth_token'))
+            if decoded["state"] == "Failure":
+                return jsonify({"message": decoded["message"]}), 401
+            return self.request_model.return_all_requests(ride_id)
+        except KeyError as k:
+            return jsonify({"message": "invalid token",
+                            "error_message": k}), 401
