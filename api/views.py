@@ -31,7 +31,7 @@ class RideViews(MethodView):
 
             decoded = User.decode_token(request.headers.get('auth_token'))
             if decoded["state"] == "Failure":
-                return jsonify({"message": decoded["message"]}), 401
+                return jsonify({"message": decoded["error_message"]}), 401
 
             if not ride_id:
                 return self.rides_handler.return_all_rides()
@@ -53,10 +53,10 @@ class RideViews(MethodView):
             token = request.headers.get('auth_token')
             if not token:
                 return jsonify({"message": "Token is missing"}), 401
-
+            
             decoded = User.decode_token(request.headers.get('auth_token'))
             if decoded["state"] == "Failure":
-                return jsonify({"message": decoded["message"]}), 401
+                return jsonify({"message": decoded["error_message"]}), 401
             if not request or not request.json:
                 return jsonify({"status_code": 400, "data": str(request.data),
                                 "error_message": "content not JSON"}), 400
@@ -84,7 +84,7 @@ class RequestView(MethodView):
                 return jsonify({"message": "Token is missing"}), 401
             decoded = User.decode_token(request.headers.get('auth_token'))
             if decoded["state"] == "Failure":
-                return jsonify({"message": decoded["message"]}), 401
+                return jsonify({"message": decoded["error_message"]}), 401
             return self.request_model.return_all_requests(ride_id)
         except KeyError as k:
             return jsonify({"message": "invalid token",

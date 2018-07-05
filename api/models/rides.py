@@ -60,7 +60,13 @@ class RidesHandler(object):
 
         if not all(request_condition):
             return self.fields_missing_info()
-
+        user = DbTransaction.retrieve_one(
+            """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
+            (request.json["user_id"], ))
+        if user is None:
+            return jsonify({"status": "Request not made",
+                "message": "No user found with id: " + str(request.json["user_id"])
+                }), 401
         ride = Ride(
             request.json['user_id'],
             request.json['destination'],
@@ -103,7 +109,13 @@ class RidesHandler(object):
 
         if not all(ride_request):
             return self.fields_missing_info()
-
+        user = DbTransaction.retrieve_one(
+            """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
+            (request.json["user_id"], ))
+        if user is None:
+            return jsonify({"status": "Request not made",
+                "message": "No user found with id: " + str(request.json["user_id"])
+                }), 401
         for ride in self.rides:
             if ride.ride_id == ride_id:
                 ride_request = Request(
