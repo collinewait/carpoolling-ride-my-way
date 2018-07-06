@@ -43,7 +43,6 @@ class DatabaseAccess(object):
             DROP TABLE IF EXISTS "user" CASCADE;
             CREATE TABLE "user" (
                     user_id SERIAL PRIMARY KEY,
-                    public_id VARCHAR(50)  UNIQUE,
                     first_name VARCHAR(50) NOT NULL,
                     last_name VARCHAR(50) NOT NULL,
                     email_address VARCHAR(50) UNIQUE NOT NULL,

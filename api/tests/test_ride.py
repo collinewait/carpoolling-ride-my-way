@@ -1,7 +1,6 @@
 """
 This module contains tests for the api end points.
 """
-import uuid
 from unittest import TestCase
 from datetime import datetime
 from flask import json
@@ -33,13 +32,13 @@ class TestRideTestCase(TestCase):
         2, "Mukon", depart_date, depart_time, 4
     )
 
-    request = Request(1, 2)
+    request = Request(1, 22)
     request1 = Request(2, 1)
     request2 = Request(1, 1)
 
-    user1 = User(str(uuid.uuid4), "coco", "wait",
+    user1 = User("coco", "wait",
                  "col@stev.com", "0772587", "123111")
-    user2 = User(str(uuid.uuid4), "colline", "wait",
+    user2 = User("colline", "wait",
                  "colline@rec.com", "0772587", "12311")
 
     def setUp(self):

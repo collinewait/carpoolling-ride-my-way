@@ -15,10 +15,10 @@ class TestUserAuthTestCase(TestCase):
     """
     Tests run for the api end pints.
     """
-    user1 = User(str(uuid.uuid4), "colline", "wait",
-                 "col+wait.com", "0772587", "123")
-    empty_user = User(str(uuid.uuid4), "", "",
-                      "col+wait.com", "0772587", "123")
+    user1 = User("colline", "wait",
+                 "colili@wait.com", "0772587", "12365")
+    empty_user = User("", "",
+                      "col+wait.com", "0772587", "12377")
     def setUp(self):
         """
         Define test variables and initialize app.

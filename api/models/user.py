@@ -10,22 +10,21 @@ class User(object):
     This class represents a User entity
     """
     def __init__(self, *args):
-        self.public_id = args[0]
-        self.first_name = args[1]
-        self.last_name = args[2]
-        self.email_address = args[3]
-        self.phone_number = args[4]
-        self.password = args[5]
+        self.first_name = args[0]
+        self.last_name = args[1]
+        self.email_address = args[2]
+        self.phone_number = args[3]
+        self.password = args[4]
 
     @staticmethod
-    def encode_token(public_id):
+    def encode_token(user_id):
         """
         Generates the Auth Token
         :return: string
         """
         from api import APP
         try:
-            token = jwt.encode({"public_id": public_id,
+            token = jwt.encode({"user_id": user_id,
                                 "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
                                APP.secret_key)
             return token
@@ -42,7 +41,7 @@ class User(object):
         from api import APP
         try:
             token = jwt.decode(auth_token, APP.config.get("SECRET_KEY"))
-            return {"public_id": token["public_id"],
+            return {"user_id": token["user_id"],
                     "state": "Success"}
         except jwt.ExpiredSignatureError:
             return {"error_message": "Signature expired. Please log in again.",
