@@ -33,7 +33,7 @@ class TestRideTestCase(TestCase):
         2, "Mukon", depart_date, depart_time, 4
     )
 
-    request = Request(1, 1)
+    request = Request(1, 2)
     request1 = Request(2, 1)
     request2 = Request(1, 1)
 
@@ -60,9 +60,6 @@ class TestRideTestCase(TestCase):
                            headers=({"auth_token": self.generate_token()}))
         self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
             self.request1.__dict__), content_type='application/json',
-                           headers=({"auth_token": self.generate_token()}))
-        self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
-            self.request2.__dict__), content_type='application/json',
                            headers=({"auth_token": self.generate_token()}))
 
     def generate_token(self):
@@ -203,7 +200,7 @@ class TestRideTestCase(TestCase):
         """
 
         response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request.__dict__), content_type='application/json',
+            self.request2.__dict__), content_type='application/json',
                                       headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 201)
