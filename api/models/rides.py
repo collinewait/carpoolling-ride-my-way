@@ -140,6 +140,9 @@ class RidesHandler(object):
         user = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
             (request.json["user_id"], ))
+        db_ride = DbTransaction.retrieve_one(
+            """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
+            (request.json["user_id"], ))
         if user is None:
             return jsonify({"status": "Request not made",
                             "message": "No user found with id: " + str(request.json["user_id"])
@@ -153,13 +156,7 @@ class RidesHandler(object):
                 )
                 ride_sql = """INSERT INTO "request"(user_id, ride_id)
                     VALUES((%s), (%s));"""
-                db_user_id = DbTransaction.retrieve_one(
-                    """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
-                    (ride_request.user_id, ))
-                db_ride_id = DbTransaction.retrieve_one(
-                    """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
-                    (ride_request.ride_id, ))
-                request_data = (db_user_id, db_ride_id)
+                request_data = (user, db_ride)
                 DbTransaction.save(ride_sql, request_data)
                 self.requests.append(ride_request.__dict__)
                 return jsonify({"Status code": 201, "request": ride_request.__dict__,
