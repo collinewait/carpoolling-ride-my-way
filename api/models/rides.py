@@ -25,8 +25,22 @@ class RidesHandler(object):
         returns ride offers in a JSON format
         :return
         """
+        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user" ON(ride.user_id = "user".user_id)"""
+        requests_turple_list = DbTransaction.retrieve_all(request_sql)
+        request_list = []
+        for request_tuple in requests_turple_list:
+            request_dict = {
+                "driver_name": request_tuple[0],
+                "ride_id": request_tuple[1],
+                "driver_id": request_tuple[2],
+                "destination": request_tuple[3],
+                "departure_date": request_tuple[4],
+                "departure_time": request_tuple[5],
+                "number_of_passengers": request_tuple[6]
+            }
+            request_list.append(request_dict)
         return jsonify({"message": "results retrieved successfully",
-                        "rides": [x.__dict__ for x in self.rides]})
+                        "rides": request_list})
 
     def return_single_ride(self, ride_id):
         """
@@ -35,11 +49,22 @@ class RidesHandler(object):
         :param ride_id: Ride id
         :return
         """
-        for ride in self.rides:
-            if ride.ride_id == ride_id:
-                return jsonify({"Status code": 200, "ride": ride.__dict__,
-                                "message": "result retrieved successfully"})
-            return self.no_ride_available(ride_id)
+        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user" ON(ride.user_id = "user".user_id) WHERE "ride_id" = %s """
+        ride_turple = DbTransaction.retrieve_one(request_sql, (ride_id, ))
+
+        if ride_turple is not None:
+            ride = {
+                "driver_name": ride_turple[0],
+                "ride_id": ride_turple[1],
+                "driver_id": ride_turple[2],
+                "destination": ride_turple[3],
+                "departure_date": ride_turple[4],
+                "departure_time": ride_turple[5],
+                "number_of_passengers": ride_turple[6]
+            }
+            return jsonify({"Status code": 200, "ride": ride,
+                            "message": "result retrieved successfully"})
+        return self.no_ride_available(ride_id)
 
     def post_ride_offer(self):
         """
