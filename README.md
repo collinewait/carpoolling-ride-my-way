@@ -1,5 +1,8 @@
-# carpoolling-ride-my-way [![Build Status](https://travis-ci.org/collinewait/carpoolling-ride-my-way.svg?branch=develop)](https://travis-ci.org/collinewait/carpoolling-ride-my-way)[![Coverage Status](https://coveralls.io/repos/github/collinewait/carpoolling-ride-my-way/badge.svg)](https://coveralls.io/github/collinewait/carpoolling-ride-my-way)[![Maintainability](https://api.codeclimate.com/v1/badges/acb8766d9fea3341890d/maintainability)](https://codeclimate.com/github/collinewait/carpoolling-ride-my-way/maintainability)
-Ride-my App is a carpooling application that provides drivers with the ability to create ride offers  and passengers to join available ride offers
+# carpoolling-ride-my-way 
+
+[![Build Status](https://travis-ci.org/collinewait/carpoolling-ride-my-way.svg?branch=develop)](https://travis-ci.org/collinewait/carpoolling-ride-my-way)[![Coverage Status](https://coveralls.io/repos/github/collinewait/carpoolling-ride-my-way/badge.svg)](https://coveralls.io/github/collinewait/carpoolling-ride-my-way)[![Maintainability](https://api.codeclimate.com/v1/badges/acb8766d9fea3341890d/maintainability)](https://codeclimate.com/github/collinewait/carpoolling-ride-my-way/maintainability)
+
+Ride-my App is a carpooling application that provides drivers with the ability to create ride offers  and passengers to join available ride offers.
 
 **Features**
 
@@ -10,7 +13,6 @@ Ride-my App is a carpooling application that provides drivers with the ability t
     - Make a ride request
     - Create a ride offer 
     - Fetch all ride requests
-    - Accept or reject a ride request.
 **API end points**
 
 - POST api/v1/auth/signup 
@@ -20,7 +22,6 @@ Ride-my App is a carpooling application that provides drivers with the ability t
 - POST api/v1/rides/#/requests
 - POST api/v1/users/rides
 - GET api/v1/users/rides/#/requests
-- PUT api/v1/users/rides/#/requests/#
 
 **Getting Started**
 
@@ -36,7 +37,10 @@ Below are the things you need to get the project up and running.
 
 **Installing the project**
 
-Type: "git clone https://github.com/collinewait/carpoolling-ride-my-way.git" in the terminal or git bash or command prompt.
+Type: 
+        
+        "git clone https://github.com/collinewait/carpoolling-ride-my-way.git"
+   in the terminal or git bash or command prompt.
 
 To install the requirements. run:
 
