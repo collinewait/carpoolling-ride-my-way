@@ -76,9 +76,9 @@ class RidesHandler(object):
             return self.request_missing_fields()
 
         request_condition = [
-            request.json["user_id"], request.json["destination"],
-            request.json["departure_date"], request.json["departure_time"],
-            request.json["number_of_passengers"]
+            request.json["user_id"].strip(), request.json["destination"].strip(),
+            request.json["departure_date"].strip(), request.json["departure_time"].strip(),
+            request.json["number_of_passengers"].strip()
             ]
 
         if not all(request_condition):
@@ -125,8 +125,8 @@ class RidesHandler(object):
             return self.request_missing_fields()
 
         ride_request = [
-            request.json["user_id"],
-            request.json["ride_id"]
+            request.json["user_id"].strip(),
+            request.json["ride_id"].strip()
         ]
 
         if not all(ride_request):
