@@ -25,7 +25,8 @@ class RidesHandler(object):
         returns ride offers in a JSON format
         :return
         """
-        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user" ON(ride.user_id = "user".user_id)"""
+        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
+         ON(ride.user_id = "user".user_id)"""
         requests_turple_list = DbTransaction.retrieve_all(request_sql)
         request_list = []
         for request_tuple in requests_turple_list:
@@ -49,7 +50,8 @@ class RidesHandler(object):
         :param ride_id: Ride id
         :return
         """
-        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user" ON(ride.user_id = "user".user_id) WHERE "ride_id" = %s """
+        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
+         ON(ride.user_id = "user".user_id) WHERE "ride_id" = %s """
         ride_turple = DbTransaction.retrieve_one(request_sql, (ride_id, ))
 
         if ride_turple is not None:
@@ -101,7 +103,8 @@ class RidesHandler(object):
             len(self.rides) + 1
             )
 
-        ride_sql = """INSERT INTO "ride"(user_id, destination, departure_date, departure_time,
+        ride_sql = """INSERT INTO "ride"(user_id, destination,
+                 departure_date, departure_time,
                  number_of_passengers)
                 VALUES((%s), %s, %s, %s, %s);"""
         db_user_id = DbTransaction.retrieve_one(
@@ -139,8 +142,8 @@ class RidesHandler(object):
             (request.json["user_id"], ))
         if user is None:
             return jsonify({"status": "Request not made",
-                "message": "No user found with id: " + str(request.json["user_id"])
-                }), 401
+                            "message": "No user found with id: " + str(request.json["user_id"])
+                           }), 401
         for ride in self.rides:
             if ride.ride_id == ride_id:
                 ride_request = Request(

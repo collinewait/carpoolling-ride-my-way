@@ -45,7 +45,8 @@ class RegisterUser(MethodView):
 
             if not user_turple:
                 new_user = User(str(uuid.uuid4), post_data['first_name'], post_data['last_name'],
-                                post_data['email_address'], post_data['phone_number'], hashed_password)
+                                post_data['email_address'], post_data['phone_number'],
+                                hashed_password)
 
                 user_sql = """INSERT INTO "user"(public_id, first_name, last_name, email_address,
                  phone_number, password)

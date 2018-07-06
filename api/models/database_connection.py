@@ -20,7 +20,8 @@ class DatabaseAccess(object):
         app = cls.APP
         if not app.config['TESTING']:
             connection = psycopg2.connect(
-                "dbname='carpooldb' user='carpooldb12' host='localhost' password='carpooldb12' port='5432'"
+                """dbname='carpooldb' user='carpooldb12' host='localhost'\
+                password='carpooldb12' port='5432'"""
             )
             return connection
         connection = psycopg2.connect(
