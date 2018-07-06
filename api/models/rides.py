@@ -51,15 +51,21 @@ class RidesHandler(object):
         ride_turple = DbTransaction.retrieve_one(request_sql, (ride_id, ))
 
         if ride_turple is not None:
-
+            user_name = ride_turple[0]
+            ride_id = ride_turple[1]
+            user_id = ride_turple[2]
+            destination = ride_turple[3]
+            departure_date = ride_turple[4]
+            departure_time = ride_turple[5]
+            number_of_passengers = ride_turple[6]
             return jsonify({"Status code": 200, "ride": {
-                "driver_name": ride_turple[0],
-                "ride_id": ride_turple[1],
-                "driver_id": ride_turple[2],
-                "destination": ride_turple[3],
-                "departure_date": ride_turple[4],
-                "departure_time": ride_turple[5],
-                "number_of_passengers": ride_turple[6]
+                "driver_name": user_name,
+                "ride_id": ride_id,
+                "driver_id": user_id,
+                "destination": destination,
+                "departure_date": departure_date,
+                "departure_time": departure_time,
+                "number_of_passengers": number_of_passengers
             },
                             "message": "result retrieved successfully"})
         return self.no_ride_available(ride_id)
