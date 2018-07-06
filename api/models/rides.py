@@ -87,9 +87,7 @@ class RidesHandler(object):
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
             (request.json["user_id"], ))
         if user is None:
-            return jsonify({"status": "Request nor sent",
-                            "message": "No user found with id: " + str(request.json["user_id"])
-                           }), 401
+            return self.no_user_found_response("Ride not created", request.json["ride_id"])
         ride = Ride(
             request.json['user_id'],
             request.json['destination'],
@@ -139,9 +137,7 @@ class RidesHandler(object):
             (request.json["ride_id"], ))
 
         if user is None:
-            return jsonify({"status": "Request not made",
-                            "message": "No user found with id: " + str(request.json["user_id"])
-                           }), 401
+            return self.no_user_found_response("Request not made", request.json["ride_id"])
         if db_ride is not None:
             ride_request = Request(
                 request.json["user_id"],
@@ -182,3 +178,14 @@ class RidesHandler(object):
         :return
         """
         return jsonify({"message": "No ride available with id: " + str(ride_id)}), 200
+
+    @staticmethod
+    def no_user_found_response(message, user_id):
+        """
+        This method returns an error message when a user
+        of a specific id is not found
+        :return:
+        """
+        return jsonify({"status": message,
+                        "message": "No user found with id: " + str(user_id)
+                       }), 401
