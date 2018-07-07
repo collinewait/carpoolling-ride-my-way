@@ -3,7 +3,7 @@ This module handles user account creation and
 user authentication
 """
 import re
-from flask import request, jsonify, make_response
+from flask import request, jsonify
 from flask.views import MethodView
 from werkzeug.security import generate_password_hash, check_password_hash
 from api.models.user import User
@@ -26,7 +26,7 @@ class RegisterUser(MethodView):
             keys = ("first_name", "last_name", "email_address",
                     "phone_number", "password")
             if not set(keys).issubset(set(request.json)):
-                return RidesHandler.request_missing_fields()
+                return jsonify(RidesHandler.request_missing_fields()), 400
 
             user_condition = [
                 request.json["first_name"].strip(), request.json["last_name"].strip(),
@@ -35,7 +35,7 @@ class RegisterUser(MethodView):
             ]
 
             if not all(user_condition):
-                return RidesHandler.fields_missing_info()
+                return jsonify(RidesHandler.fields_missing_info()), 400
 
             if re.match(r"[^@]+@[^@]+\.[^@]+", request.json["email_address"]):
                 post_data = request.get_json()

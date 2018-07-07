@@ -39,4 +39,4 @@ class RequestModel(object):
 
             return jsonify({"message": "result retrieved successfully",
                             "requests": request_list}), 200
-        return RidesHandler.no_ride_available(ride_id)
+        return jsonify(RidesHandler.no_ride_available(ride_id)), 200
