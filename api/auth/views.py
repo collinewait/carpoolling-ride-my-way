@@ -3,11 +3,10 @@ This module handles user account creation and
 user authentication
 """
 import re
-from flask import request, jsonify, json
+from flask import request, jsonify
 from flask.views import MethodView
 from werkzeug.security import generate_password_hash, check_password_hash
 from api.models.user import User
-from api.models.rides import  RidesHandler
 from api.models.database_transaction import DbTransaction
 
 
@@ -22,10 +21,10 @@ class RegisterUser(MethodView):
         :return: Json Response with the user`s token
         """
         post_data = request.get_json()
-        verified = self.verify_user_on_signup(post_data)
 
-        if verified["status"] == "failure":
-            return jsonify({"error_message": verified["error_message"]}), 400
+        if self.verify_user_on_signup(post_data)["status"] == "failure":
+            return jsonify({
+                "error_message": self.verify_user_on_signup(post_data)["error_message"]}), 400
 
         hashed_password = generate_password_hash(post_data['password'], method='sha256')
 
