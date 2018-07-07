@@ -68,7 +68,7 @@ class RidesHandler(object):
                 "number_of_passengers": number_of_passengers
             },
                             "message": "result retrieved successfully"})
-        return jsonify(self.no_ride_available(ride_id)), 200
+        return self.no_ride_available(ride_id)
 
     def post_ride_offer(self):
         """
@@ -79,7 +79,7 @@ class RidesHandler(object):
         keys = ("user_id", "destination", "departure_date",
                 "departure_time", "number_of_passengers")
         if not set(keys).issubset(set(request.json)):
-            return jsonify(self.request_missing_fields()), 400
+            return self.request_missing_fields()
 
         request_condition = [
             request.json["user_id"], request.json["destination"].strip(),
@@ -88,13 +88,12 @@ class RidesHandler(object):
             ]
 
         if not all(request_condition):
-            return jsonify(self.fields_missing_info()), 400
+            return self.fields_missing_info()
         user = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
             (request.json["user_id"], ))
         if user is None:
-            return jsonify(self.no_user_found_response("Ride not created",
-                                                       request.json["ride_id"])), 401
+            return self.no_user_found_response("Ride not created", request.json["ride_id"])
         ride = Ride(
             request.json['user_id'],
             request.json['destination'],
@@ -127,7 +126,7 @@ class RidesHandler(object):
         """
         request_keys = ("user_id", "ride_id")
         if not set(request_keys).issubset(set(request.json)):
-            return jsonify(self.request_missing_fields()), 400
+            return self.request_missing_fields()
 
         ride_request = [
             request.json["user_id"],
@@ -135,7 +134,7 @@ class RidesHandler(object):
         ]
 
         if not all(ride_request):
-            return jsonify(self.fields_missing_info()), 400
+            return self.fields_missing_info()
         user = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
             (request.json["user_id"], ))
@@ -144,8 +143,7 @@ class RidesHandler(object):
             (request.json["ride_id"], ))
 
         if user is None:
-            return jsonify(self.no_user_found_response("Request not made",
-                                                       request.json["ride_id"])), 401
+            return self.no_user_found_response("Request not made", request.json["ride_id"])
         if db_ride is not None:
             ride_request = Request(
                 request.json["user_id"],
@@ -158,7 +156,7 @@ class RidesHandler(object):
             return jsonify({"Status code": 201, "request": ride_request.__dict__,
                             "message": "request sent successfully"}), 201
 
-        return jsonify(self.no_ride_available(ride_id)), 200
+        return self.no_ride_available(ride_id)
 
     @staticmethod
     def fields_missing_info():
@@ -167,8 +165,8 @@ class RidesHandler(object):
         the data sent are missing
         :return
         """
-        return {"status_code": 400, "data": request.json,
-                "error_message": "Some fields are empty"}
+        return jsonify({"status_code": 400, "data": request.json,
+                        "error_message": "Some fields are empty"}), 400
     @staticmethod
     def request_missing_fields():
         """
@@ -176,7 +174,7 @@ class RidesHandler(object):
         error message that some fields are missing
         :return
         """
-        return {"error_message": "some of these fields are missing"}
+        return jsonify({"error_message": "some of these fields are missing"}), 400
 
     @staticmethod
     def no_ride_available(ride_id):
@@ -185,7 +183,7 @@ class RidesHandler(object):
         found
         :return
         """
-        return {"message": "No ride available with id: " + str(ride_id)}
+        return jsonify({"message": "No ride available with id: " + str(ride_id)}), 200
 
     @staticmethod
     def no_user_found_response(message, user_id):
@@ -194,6 +192,6 @@ class RidesHandler(object):
         of a specific id is not found
         :return:
         """
-        return {"status": message,
-                "error_message": "No user found with id: " + str(user_id)
-               }
+        return jsonify({"status": message,
+                        "message": "No user found with id: " + str(user_id)
+                       }), 401

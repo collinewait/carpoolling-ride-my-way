@@ -26,7 +26,7 @@ class RegisterUser(MethodView):
             keys = ("first_name", "last_name", "email_address",
                     "phone_number", "password")
             if not set(keys).issubset(set(request.json)):
-                return jsonify(RidesHandler.request_missing_fields()), 400
+                return RidesHandler.request_missing_fields()
 
             user_condition = [
                 request.json["first_name"].strip(), request.json["last_name"].strip(),
@@ -35,7 +35,7 @@ class RegisterUser(MethodView):
             ]
 
             if not all(user_condition):
-                return jsonify(RidesHandler.fields_missing_info()), 400
+                return RidesHandler.fields_missing_info()
 
             if re.match(r"[^@]+@[^@]+\.[^@]+", request.json["email_address"]):
                 post_data = request.get_json()
