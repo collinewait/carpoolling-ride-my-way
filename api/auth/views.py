@@ -85,20 +85,33 @@ class LoginUser(MethodView):
 
         query = """SELECT * FROM "user" WHERE "email_address" = %s"""
         user = DbTransaction.retrieve_one(query, (post_data['email_address'], ))
+        verified_user = self.verify_user(user, post_data['password'])
 
+        if verified_user["status"] == "failure":
+            return jsonify({"message": verified_user["error_message"]}), 401
+        return jsonify(verified_user), 200
+
+    @staticmethod
+    def verify_user(user, password):
+        """
+        This method verifies a user before having access to the system
+        If valid, It returns a success message with a token
+        Else it returns an error message
+        :param:user: a tuple containing user information
+        :return:
+        """
         if not user:
-            return jsonify({"status": "Incorrect Email address",
-                            'Message': 'Please enter valid Email address'}), 401
-        if check_password_hash(user[5], post_data['password']):
+            return {"status": "failure",
+                    'error_message': 'Please enter valid Email address'}
+        if check_password_hash(user[5], password):
             auth_token = User.encode_token(user[0])
             if auth_token:
                 response = {"status": "success", "message": "Successfully logged in.",
                             "auth_token": auth_token.decode()
                            }
-                return make_response(jsonify(response)), 200
-            response = {"status": "fail", "message": "Try again"}
-            return make_response(jsonify(response)), 400
+                return response
+            response = {"status": "failure", "error_message": "Try again"}
+            return response
 
-        return jsonify({"status": "Incorrect password",
-                        'Message': 'Please enter correct password'}), 401
-    
+        return {"status": "failure",
+                'error_message': 'Please enter correct password'}
