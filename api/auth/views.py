@@ -74,8 +74,7 @@ class LoginUser(MethodView):
     def post(self):
         """
         This method Logs a user in if the supplied credentials are correct.
-        Uses Http basic authentication and it returns a token used to authenticate
-        subsequent requests made to other routes.
+        Genetes a token used to authenticate subsequent requests made to other routes.
         :return: token
         """
         post_data = request.get_json()
@@ -93,16 +92,11 @@ class LoginUser(MethodView):
         if check_password_hash(user[5], post_data['password']):
             auth_token = User.encode_token(user[0])
             if auth_token:
-                response = {
-                    "status": "success",
-                    "message": "Successfully logged in.",
-                    "auth_token": auth_token.decode()
-                }
+                response = {"status": "success", "message": "Successfully logged in.",
+                            "auth_token": auth_token.decode()
+                           }
                 return make_response(jsonify(response)), 200
-            response = {
-                "status": "fail",
-                "message": "Try again"
-            }
+            response = {"status": "fail", "message": "Try again"}
             return make_response(jsonify(response)), 400
 
         return jsonify({"status": "Incorrect password",
