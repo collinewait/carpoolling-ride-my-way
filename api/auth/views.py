@@ -85,14 +85,14 @@ class LoginUser(MethodView):
 
         query = """SELECT * FROM "user" WHERE "email_address" = %s"""
         user = DbTransaction.retrieve_one(query, (post_data['email_address'], ))
-        verified_user = self.verify_user(user, post_data['password'])
+        verified_user = self.verify_user_on_login(user, post_data['password'])
 
         if verified_user["status"] == "failure":
             return jsonify({"message": verified_user["error_message"]}), 401
         return jsonify(verified_user), 200
 
     @staticmethod
-    def verify_user(user, password):
+    def verify_user_on_login(user, password):
         """
         This method verifies a user before having access to the system
         If valid, It returns a success message with a token
