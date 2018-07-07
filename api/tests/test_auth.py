@@ -71,7 +71,7 @@ class TestUserAuthTestCase(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json)
-        self.assertEqual("Some fields are empty", response.json['error_message'])
+        self.assertEqual("Some fields are not defined", response.json['error_message'])
 
     def test_partial_fields_not_sent(self):
         """
@@ -83,7 +83,7 @@ class TestUserAuthTestCase(TestCase):
                  last_name=self.user1.last_name, email_address=self.user1.email_address)),
                                       content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual("some of these fields are missing",
+        self.assertEqual("Some fields are missing, all fields are required",
                          response.json['error_message'])
 
     def test_user_login(self):

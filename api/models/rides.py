@@ -165,7 +165,8 @@ class RidesHandler(object):
         the data sent are missing
         :return
         """
-        return jsonify({"status_code": 400, "data": request.json,
+        return jsonify({"status": "failure",
+                        "status_code": 400, "data": request.json,
                         "error_message": "Some fields are empty"}), 400
     @staticmethod
     def request_missing_fields():
@@ -174,7 +175,8 @@ class RidesHandler(object):
         error message that some fields are missing
         :return
         """
-        return jsonify({"error_message": "some of these fields are missing"}), 400
+        return jsonify({"status": "failure",
+                        "error_message": "some of these fields are missing"}), 400
 
     @staticmethod
     def no_ride_available(ride_id):
@@ -183,7 +185,8 @@ class RidesHandler(object):
         found
         :return
         """
-        return jsonify({"message": "No ride available with id: " + str(ride_id)}), 200
+        return jsonify({"status": "failure",
+                        "message": "No ride available with id: " + str(ride_id)}), 200
 
     @staticmethod
     def no_user_found_response(message, user_id):
@@ -192,6 +195,7 @@ class RidesHandler(object):
         of a specific id is not found
         :return:
         """
-        return jsonify({"status": message,
-                        "message": "No user found with id: " + str(user_id)
-                       }), 401
+        return jsonify({"status": "failure",
+                        "message": message,
+                        "error_message": "No user found with id: " + str(user_id)
+                       }), 400
