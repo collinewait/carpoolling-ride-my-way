@@ -78,8 +78,8 @@ class LoginUser(MethodView):
         :return: token
         """
         post_data = request.get_json()
-
-        if not post_data or not post_data['email_address'] or not post_data['password']:
+        requirement = [post_data['email_address'].strip(), post_data['password']]
+        if not all(requirement):
             return jsonify({"status": "Missing email address or password",
                             'Message': 'All Login details required'}), 401
 
