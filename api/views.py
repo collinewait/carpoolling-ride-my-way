@@ -84,4 +84,13 @@ class RequestView(MethodView):
         if decoded["state"] == "Failure":
             return RideViews.decode_failure(decoded["error_message"])
         return self.request_model.return_all_requests(ride_id)
-    
+
+    def put(self, ride_id, request_id):
+        """
+        This method Edits a request with a valid Id. The request content-type must be json
+        It delegates the work to edit_request(ride_id, request_id) method
+        :param ride_id: Ride Id
+        :param request_id: Request Id
+        :return: Response of Edited request.
+        """
+        return self.request_model.edit_request(ride_id, request_id)

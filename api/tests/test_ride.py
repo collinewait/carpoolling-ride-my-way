@@ -57,9 +57,9 @@ class TestRideTestCase(TestCase):
         self.client().post('/api/v1/rides/', data=json.dumps(
             self.ride2.__dict__), content_type='application/json',
                            headers=({"auth_token": self.generate_token()}))
-        self.client().post('/api/v1/rides/1/requests/', data=json.dumps(
-            self.request1.__dict__), content_type='application/json',
-                           headers=({"auth_token": self.generate_token()}))
+        self.client().post('/api/v1/rides/1/requests', data=json.dumps(
+            self.request2.__dict__), content_type='application/json',
+                                      headers=({"auth_token": self.generate_token()}))
 
     def generate_token(self):
         """
@@ -263,6 +263,55 @@ class TestRideTestCase(TestCase):
                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIn("result retrieved successfully", response.json["message"])
+
+    def test_editing_json_format(self):
+        """
+        This method tests whether a request sent to make an update
+        is a JSON format. An error is returned if the format  is 
+        not JSON
+        """
+        response = self.client().put('/api/v1/users/rides/1/requests/1',
+                                     data=json.dumps(dict(request_status="Accepted")),
+                                     content_type='text/plain')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual("Content-type must be JSON", response.json["message"])
+
+    def test_edit_existing_ride(self):
+        """
+        This method tests whether an update is made to a request
+        of an existing ride. A message of no ride available is returned
+        if a ride offer doesnot exist.
+        """
+        response = self.client().put('/api/v1/users/rides/5/requests/1',
+                                     data=json.dumps(dict(request_status="Accepted")),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("No ride available with id: 5", response.json['message'])
+
+    def test_edit_existing_request(self):
+        """
+        This method tests whether an update is made to a request
+        an existing request. A message of no request available is
+        returned if a request doesnot exist.
+        """
+        response = self.client().put('/api/v1/users/rides/1/requests/10',
+                                     data=json.dumps(dict(request_status="Accepted")),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("No request available with id: 10", response.json['message'])
+
+    def test_edit_request(self):
+        """
+        This method tests whether a request status is updated.
+        default is pending and can be updated to Accepetd or
+        rejected.
+        """
+        response = self.client().put('/api/v1/users/rides/1/requests/1',
+                                     data=json.dumps(dict(request_status="Accepted")),
+                                     content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("success", response.json["status"])
+
 
     def tearDown(self):
         sql_commands = (

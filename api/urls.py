@@ -34,3 +34,6 @@ class Urls(object):
                          methods=["POST",])
         app.add_url_rule('/api/v1/users/rides/<int:ride_id>/requests',
                          view_func=RequestView.as_view('all_requests'), methods=["GET",])
+        app.add_url_rule('/api/v1/users/rides/<int:ride_id>/requests/<int:request_id>',
+                         view_func=RequestView.as_view('request'),
+                          methods=["PUT",])
