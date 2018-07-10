@@ -312,7 +312,6 @@ class TestRideTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual("success", response.json["status"])
 
-
     def tearDown(self):
         sql_commands = (
             """DROP TABLE IF EXISTS "user" CASCADE;""",

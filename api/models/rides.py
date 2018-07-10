@@ -115,7 +115,12 @@ class RidesHandler(object):
             ride.departure_time, ride.number_of_passengers
             )
         DbTransaction.save(ride_sql, ride_data)
-        return jsonify({"status_code": 201, "ride": ride.__dict__,
+        return jsonify({"status_code": 201, "ride": {
+            "destination": ride.destination,
+            "departure_date": ride.departure_date,
+            "departure_time": ride.departure_time,
+            "number_of_passengers": ride.number_of_passengers
+        },
                         "message": "Ride added successfully"}), 201
 
     def post_request_to_ride_offer(self, ride_id):
@@ -153,7 +158,10 @@ class RidesHandler(object):
                 VALUES((%s), (%s));"""
             request_data = (user, db_ride)
             DbTransaction.save(ride_sql, request_data)
-            return jsonify({"Status code": 201, "request": ride_request.__dict__,
+            return jsonify({"Status code": 201, "request": {
+                "user_id": ride_request.user_id,
+                "ride_id": ride_request.ride_id
+            },
                             "message": "request sent successfully"}), 201
 
         return self.no_ride_available(ride_id)

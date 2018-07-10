@@ -61,7 +61,7 @@ class RequestModel(object):
                     edit_data = (request.json["request_status"], request_id)
                     nummber_of_updated_rows = DbTransaction.edit(edit_sql, edit_data)
                     return jsonify({"status": "success",
-                                    "message": "request Updated successfully.\
+                                    "message": "request " + request.json["request_status"] + " successfully.\
                                     " + str(nummber_of_updated_rows) + " row(s) updated"}), 200
                 return self.no_request_available(request_id)
             return RidesHandler.no_ride_available(ride_id)
@@ -70,8 +70,8 @@ class RequestModel(object):
     @staticmethod
     def no_request_available(request_id):
         """
-        This method returns a JSON response with a message of no request
-        found
+        This method returns a message of no request found of a specific id
+        No request available with id: #
         :return
         """
         return jsonify({"status": "failure",
