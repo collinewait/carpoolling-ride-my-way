@@ -63,14 +63,14 @@ class RequestModel(object):
                     return jsonify({"status": "success",
                                     "message": "request " + request.json["request_status"] + " successfully.\
                                     " + str(nummber_of_updated_rows) + " row(s) updated"}), 200
-                return self.no_request_available(request_id)
+                return self.no_request_found(request_id)
             return RidesHandler.no_ride_available(ride_id)
         return jsonify({"Staus": "failure", "message": "Content-type must be JSON"}), 400
 
     @staticmethod
-    def no_request_available(request_id):
+    def no_request_found(request_id):
         """
-        This method returns a message of no request found of a specific id
+        Returns a message of no vailable request of a specific id
         No request available with id: #
         :return
         """
