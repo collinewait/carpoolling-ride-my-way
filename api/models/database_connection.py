@@ -69,6 +69,7 @@ class DatabaseAccess(object):
                     request_id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
                     ride_id INTEGER NOT NULL,
+                    request_status VARCHAR(50) NOT NULL DEFAULT 'pending',
                     FOREIGN KEY (user_id)
                         REFERENCES "user" (user_id),
                     FOREIGN KEY (ride_id)
