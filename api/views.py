@@ -93,4 +93,10 @@ class RequestView(MethodView):
         :param request_id: Request Id
         :return: Response of Edited request.
         """
+        token = request.headers.get('auth_token')
+        if not token:
+            return jsonify({"message": "Token is missing"}), 401
+        decoded = User.decode_token(request.headers.get('auth_token'))
+        if decoded["state"] == "Failure":
+            return RideViews.decode_failure(decoded["error_message"])
         return self.request_model.edit_request(ride_id, request_id)

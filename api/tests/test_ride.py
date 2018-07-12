@@ -267,12 +267,13 @@ class TestRideTestCase(TestCase):
     def test_editing_json_format(self):
         """
         This method tests whether a request sent to make an update
-        is a JSON format. An error is returned if the format  is 
+        is a JSON format. An error is returned if the format  is
         not JSON
         """
         response = self.client().put('/api/v1/users/rides/1/requests/1',
                                      data=json.dumps(dict(request_status="Accepted")),
-                                     content_type='text/plain')
+                                     content_type='text/plain',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 400)
         self.assertEqual("Content-type must be JSON", response.json["message"])
 
@@ -284,7 +285,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().put('/api/v1/users/rides/5/requests/1',
                                      data=json.dumps(dict(request_status="Accepted")),
-                                     content_type='application/json')
+                                     content_type='application/json',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No ride available with id: 5", response.json['message'])
 
@@ -296,7 +298,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().put('/api/v1/users/rides/1/requests/10',
                                      data=json.dumps(dict(request_status="Accepted")),
-                                     content_type='application/json')
+                                     content_type='application/json',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No request available with id: 10", response.json['message'])
 
@@ -308,7 +311,8 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().put('/api/v1/users/rides/1/requests/1',
                                      data=json.dumps(dict(request_status="Accepted")),
-                                     content_type='application/json')
+                                     content_type='application/json',
+                                     headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("success", response.json["status"])
 
