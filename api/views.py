@@ -29,12 +29,14 @@ class RideViews(MethodView):
 
         decoded = User.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
-            return self.decode_failure(decoded["error_message"])
+            return User.decode_failure(decoded["error_message"])
 
-        if not ride_id:
-            return self.rides_handler.return_all_rides()
+        if User.check_login_status(decoded["user_id"]):
+            if not ride_id:
+                return self.rides_handler.return_all_rides()
 
-        return self.rides_handler.return_single_ride(ride_id)
+            return self.rides_handler.return_single_ride(ride_id)
+        return jsonify({"message": "Please login"}), 401
 
     def post(self, ride_id):
         """"
@@ -49,22 +51,15 @@ class RideViews(MethodView):
 
         decoded = User.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
-            return self.decode_failure(decoded["error_message"])
-        if not request or not request.json:
-            return jsonify({"status_code": 400, "data": str(request.data),
-                            "error_message": "content not JSON"}), 400
-        if ride_id:
-            return self.rides_handler.post_request_to_ride_offer(ride_id)
-        return self.rides_handler.post_ride_offer()
-
-    @staticmethod
-    def decode_failure(message):
-        """
-        This method returns an error message when an error is
-        encounterd on decoding the token
-        """
-        return jsonify({"message": message}), 401
-
+            return User.decode_failure(decoded["error_message"])
+        if User.check_login_status(decoded["user_id"]):
+            if not request or not request.json:
+                return jsonify({"status_code": 400, "data": str(request.data),
+                                "error_message": "content not JSON"}), 400
+            if ride_id:
+                return self.rides_handler.post_request_to_ride_offer(ride_id)
+            return self.rides_handler.post_ride_offer()
+        return jsonify({"message": "Please login"}), 401
 
 
 class RequestView(MethodView):
@@ -82,9 +77,10 @@ class RequestView(MethodView):
             return jsonify({"message": "Token is missing"}), 401
         decoded = User.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
-            return RideViews.decode_failure(decoded["error_message"])
-        return self.request_model.return_all_requests(ride_id)
-
+            return User.decode_failure(decoded["error_message"])
+        if User.check_login_status(decoded["user_id"]):
+            return self.request_model.return_all_requests(ride_id)
+        return jsonify({"message": "Please login"}), 401
     def put(self, ride_id, request_id):
         """
         This method Edits a request with a valid Id. The request content-type must be json
@@ -98,5 +94,7 @@ class RequestView(MethodView):
             return jsonify({"message": "Token is missing"}), 401
         decoded = User.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
-            return RideViews.decode_failure(decoded["error_message"])
-        return self.request_model.edit_request(ride_id, request_id)
+            return User.decode_failure(decoded["error_message"])
+        if User.check_login_status(decoded["user_id"]):
+            return self.request_model.edit_request(ride_id, request_id)
+        return jsonify({"message": "Please login"}), 401

@@ -47,7 +47,8 @@ class DatabaseAccess(object):
                     last_name VARCHAR(50) NOT NULL,
                     email_address VARCHAR(50) UNIQUE NOT NULL,
                     phone_number INTEGER NOT NULL,
-                    password VARCHAR(80) NOT NULL
+                    password VARCHAR(80) NOT NULL,
+                    is_loggedin BOOLEAN DEFAULT FALSE
                 )
             """,
             """
