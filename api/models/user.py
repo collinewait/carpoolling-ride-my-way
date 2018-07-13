@@ -3,6 +3,8 @@ This module is a ride model with its attributes
 """
 import datetime
 import jwt
+from flask import jsonify
+from api.models.database_transaction import DbTransaction
 
 
 class User(object):
@@ -49,4 +51,27 @@ class User(object):
         except jwt.InvalidTokenError:
             return {"error_message": "Invalid token. Please log in again.",
                     "state": "Failure"}
-    
+
+    @staticmethod
+    def decode_failure(message):
+        """
+        This method returns an error message when an error is
+        encounterd on decoding the token
+        """
+        return jsonify({"message": message}), 401
+
+    @staticmethod
+    def check_login_status(user_id):
+        """
+        This method checks whether a user is logged in or not
+        If a user is logged in, it returns true and returns
+        false if a user is not logged in
+        :param user_id: User Id
+        :return
+        """
+        is_loggedin = DbTransaction.retrieve_one(
+            """SELECT "is_loggedin" FROM "user" WHERE "user_id" = %s""",
+            (user_id, ))
+        if is_loggedin[0]:
+            return True
+        return False

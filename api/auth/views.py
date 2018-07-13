@@ -113,6 +113,7 @@ class LoginUser(MethodView):
 
         if verified_user["status"] == "failure":
             return jsonify({"message": verified_user["error_message"]}), 401
+        self.update_user_status(True, user[0])
         return jsonify(verified_user), 200
 
     @staticmethod
@@ -139,3 +140,43 @@ class LoginUser(MethodView):
 
         return {"status": "failure",
                 'error_message': 'Please enter correct password'}
+
+    @staticmethod
+    def update_user_status(status, user_id):
+        """
+        This method updates a user login status when logged in to true
+        and to false when a user logs out.
+        """
+        user_status_update_sql = """UPDATE "user" SET is_loggedin = %s
+                    WHERE user_id = %s"""
+        if status:
+            edit_data = (True, user_id)
+        else:
+            edit_data = (False, user_id)
+        DbTransaction.edit(user_status_update_sql, edit_data)
+        if status:
+            return None
+        return {"status": "success",
+                'message': 'You are logged out successfully'}
+
+
+class Logout(MethodView):
+    """
+    This class logs out a user from the system
+    """
+    def post(self, user_id):
+        """This method logs out a user"""
+        token = request.headers.get('auth_token')
+        if not token:
+            return jsonify({"message": "Token is missing"}), 401
+
+        decoded = User.decode_token(request.headers.get('auth_token'))
+        if decoded["state"] == "Failure":
+            return User.decode_failure(decoded["error_message"])
+        if User.check_login_status(decoded["user_id"]):
+            logout_info = LoginUser.update_user_status(False, user_id)
+            if logout_info["status"] == "success":
+                return jsonify(logout_info), 200
+            return jsonify({"status": "failure",
+                            'error_message': 'Failed to logout'}), 200
+        return jsonify({"message": "Please login"}), 401

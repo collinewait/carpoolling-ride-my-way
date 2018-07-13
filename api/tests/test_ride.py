@@ -316,6 +316,34 @@ class TestRideTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual("success", response.json["status"])
 
+    def test_logout(self):
+        """
+        This method tests that a user is able to logout
+        """
+        response = self.client().post('/api/v1/users/logout/1',
+                                      headers=({"auth_token": self.generate_token()}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("You are logged out successfully", response.json["message"])
+
+    def test_login_status(self):
+        """
+        This method tests the status of a user when logged in
+        """
+        response = User.check_login_status(1)
+        self.assertEqual(True, response)
+
+    def test_logout_status(self):
+        """
+        This method tests the user status after logging out
+        of the system. Firts logs out the user and then checks user
+        status.
+        """
+        self.client().post('/api/v1/users/logout/1',
+                           headers=({"auth_token": self.generate_token()}))
+        response = User.check_login_status(1)
+        self.assertEqual(False, response)
+
+
     def tearDown(self):
         sql_commands = (
             """DROP TABLE IF EXISTS "user" CASCADE;""",
