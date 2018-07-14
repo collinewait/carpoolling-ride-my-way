@@ -53,11 +53,11 @@ class RideViews(MethodView):
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
+            if ride_id:
+                return self.rides_handler.post_request_to_ride_offer(decoded["user_id"], ride_id)
             if not request or not request.json:
                 return jsonify({"status_code": 400, "data": str(request.data),
                                 "error_message": "content not JSON"}), 400
-            if ride_id:
-                return self.rides_handler.post_request_to_ride_offer(ride_id)
             return self.rides_handler.post_ride_offer()
         return jsonify({"message": "Please login"}), 401
 

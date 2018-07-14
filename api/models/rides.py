@@ -101,7 +101,7 @@ class RidesHandler(object):
                                                    request.json['departure_time'],
                                                    request.json['number_of_passengers'])
         if ride_existance["status"] == "failure":
-            return jsonify(ride_existance["message"]), 400
+            return jsonify({"message": ride_existance["message"]}), 400
         ride = Ride(
             request.json['user_id'],
             request.json['destination'],
@@ -131,46 +131,31 @@ class RidesHandler(object):
         },
                         "message": "Ride added successfully"}), 201
 
-    def post_request_to_ride_offer(self, ride_id):
+    def post_request_to_ride_offer(self, user_id, ride_id):
         """
         This method saves a request to a ride offer when a ride_id is set
         It takes control from the post() method
         :return
         """
-        request_keys = ("user_id", "ride_id")
-        if not set(request_keys).issubset(set(request.json)):
-            return self.request_missing_fields()
-
-        ride_request = [
-            request.json["user_id"],
-            request.json["ride_id"]
-        ]
-
-        if not all(ride_request):
-            return self.fields_missing_info()
-        user = DbTransaction.retrieve_one(
+        db_user_id = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
-            (request.json["user_id"], ))
-        db_ride = DbTransaction.retrieve_one(
+            (user_id, ))
+        db_ride_id = DbTransaction.retrieve_one(
             """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
-            (request.json["ride_id"], ))
+            (ride_id, ))
 
-        if user is None:
-            return self.no_user_found_response("Request not made", request.json["ride_id"])
-        if db_ride is None:
+        if db_user_id is None:
+            return self.no_user_found_response("Request not made", ride_id)
+        if db_ride_id is None:
             return self.no_ride_available(ride_id)
 
-        check_request = self.check_request_existance(request.json["user_id"],
-                                                     request.json["ride_id"])
+        check_request = self.check_request_existance(user_id, ride_id)
         if check_request["status"] == "failure":
-            return jsonify(check_request["message"]), 400
-        ride_request = Request(
-            request.json["user_id"],
-            request.json["ride_id"]
-        )
+            return jsonify({"message": check_request["message"]}), 400
+        ride_request = Request(user_id, ride_id)
         ride_sql = """INSERT INTO "request"(user_id, ride_id)
             VALUES((%s), (%s));"""
-        request_data = (user, db_ride)
+        request_data = (user_id, ride_id)
         DbTransaction.save(ride_sql, request_data)
         return jsonify({"Status code": 201, "request": {
             "user_id": ride_request.user_id,

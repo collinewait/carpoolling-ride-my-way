@@ -35,10 +35,6 @@ class TestRideTestCase(TestCase):
         1, "Kawempe", depart_date, depart_time, 3
     )
 
-    request = Request(1, 22)
-    request1 = Request(2, 1)
-    request2 = Request(1, 1)
-
     user1 = User("coco", "wait",
                  "col@stev.com", "0772587", "123111")
     user2 = User("colline", "wait",
@@ -60,9 +56,7 @@ class TestRideTestCase(TestCase):
         self.client().post('/api/v1/rides/', data=json.dumps(
             self.ride2.__dict__), content_type='application/json',
                            headers=({"auth_token": self.generate_token()}))
-        self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request2.__dict__), content_type='application/json',
-                           headers=({"auth_token": self.generate_token()}))
+        self.client().post('/api/v1/rides/1/requests', headers=({"auth_token": self.generate_token()}))
 
     def generate_token(self):
         """
@@ -74,6 +68,21 @@ class TestRideTestCase(TestCase):
             data=json.dumps(dict(
                 email_address=self.user1.email_address,
                 password=self.user1.password
+            )),
+            content_type='application/json'
+        )
+        return response.json["auth_token"]
+
+    def get_another_token(self):
+        """
+        This method gets another token to be used when testing
+        of requests made to a ride offer
+        """
+        response = self.client().post(
+            '/api/v1/auth/login/',
+            data=json.dumps(dict(
+                email_address=self.user2.email_address,
+                password=self.user2.password
             )),
             content_type='application/json'
         )
@@ -165,7 +174,7 @@ class TestRideTestCase(TestCase):
                                       headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual("Ride already exists", json.loads(response.data.decode()))
+        self.assertEqual("Ride already exists", response.json["message"])
 
     def test_non_json_data_not_sent(self):
         """
@@ -212,10 +221,8 @@ class TestRideTestCase(TestCase):
         This method tests the joinig of a ride offer
         (POST request)
         """
-
-        response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request1.__dict__), content_type='application/json',
-                                      headers=({"auth_token": self.generate_token()}))
+        response = self.client().post('/api/v1/rides/1/requests',
+            headers=({"auth_token": self.get_another_token()}))
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("request", response.json)
@@ -227,34 +234,12 @@ class TestRideTestCase(TestCase):
         Tests that a request is not duplicated if it exists already
         (POST request)
         """
-        response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request2.__dict__), content_type='application/json',
+        response = self.client().post('/api/v1/rides/1/requests',
+            content_type='application/json',
                                       headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual("Request already exists", json.loads(response.data.decode()))
-
-    def test_non_json_request_not_sent(self):
-        """
-        This method tests that non json request is not sent
-        """
-        response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            self.request.__dict__), content_type='text/plain',
-                                      headers=({"auth_token": self.generate_token()}))
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual("content not JSON", response.json['error_message'])
-
-    def test_empty_request_attributes(self):
-        """
-        This method tests that data is not sent with empty fields
-        """
-        response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            dict(user_id="", ride_id="")), content_type='application/json',
-                                      headers=({"auth_token": self.generate_token()}))
-
-        self.assertEqual(response.status_code, 400)
-        self.assertTrue(response.json)
-        self.assertEqual("Some fields are empty", response.json['error_message'])
+        self.assertEqual("Request already exists", response.json["message"])
 
     def test_non_existing_ride_request(self):
         """
@@ -262,25 +247,11 @@ class TestRideTestCase(TestCase):
         ride offer returns a JSON response showing ride not
         found
         """
-        response = self.client().post('/api/v1/rides/22/requests', data=json.dumps(
-            self.request.__dict__), content_type='application/json',
+        response = self.client().post('/api/v1/rides/22/requests',
                                       headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual("No ride available with id: 22", response.json['message'])
-
-    def test_partial_request_sent(self):
-        """
-        This method tests that data with partial fields is not send
-        on creating a ride offer
-        """
-        response = self.client().post('/api/v1/rides/1/requests', data=json.dumps(
-            dict(passenger_contact=self.user_test.phone_number)),
-                                      content_type='application/json',
-                                      headers=({"auth_token": self.generate_token()}))
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual("some of these fields are missing",
-                         response.json['error_message'])
 
     def test_api_gets_all_ride_requests(self):
         """
