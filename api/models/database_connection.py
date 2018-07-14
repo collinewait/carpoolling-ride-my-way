@@ -59,7 +59,7 @@ class DatabaseAccess(object):
                     destination VARCHAR(255),
                     departure_date VARCHAR(50) NOT NULL,
                     departure_time VARCHAR(50) NOT NULL,
-                    number_of_passengers VARCHAR(50)  NULL,
+                    number_of_passengers INTEGER NOT NULL,
                     FOREIGN KEY (user_id)
                     REFERENCES "user" (user_id)
                 )
