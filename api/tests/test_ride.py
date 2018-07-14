@@ -145,9 +145,18 @@ class TestRideTestCase(TestCase):
         self.assertIsInstance(response.json, dict)
         self.assertEqual("The requested resource was not found on the server",
                          response.json["error_message"])
-        self.assertEqual(404, response.json["status_code"])
         self.assertEqual("http://localhost/api/v1/rides/me",
                          response.json["url"])
+
+    def test_method_not_allowed(self):
+        """
+        This method tests that a json response is returned
+        when the a wrong url is used on a method
+        """
+        response = self.client().get('/api/v1/users/rides/1/requests/1')
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual("Method not allowed for the requested url",
+                         response.json["error_message"])
 
     def test_post_creates_a_ride_offer(self):
         """

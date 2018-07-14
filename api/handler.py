@@ -24,3 +24,20 @@ class ErrorHandler(object):
             response = jsonify(message)
             response.status_code = 404
         return response
+
+    @staticmethod
+    def method_not_allowed(status_code=None):
+        """
+        This method returns a json response when a method
+        is not allowed for the requested url
+        """
+        if status_code:
+
+            message = {
+                "error_message": "Method not allowed for the requested url",
+                "status_code": 405,
+                "url":  request.url
+            }
+            response = jsonify(message)
+            response.status_code = 405
+        return response
