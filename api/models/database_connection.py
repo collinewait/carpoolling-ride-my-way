@@ -1,6 +1,7 @@
 """
 This module handles the database set up
 """
+import os
 import psycopg2
 
 class DatabaseAccess(object):
@@ -8,39 +9,35 @@ class DatabaseAccess(object):
     This class contains methods to create a database connection
     and database table creation
     """
-    APP = None
-
-    @classmethod
-    def database_connection(cls):
+    @staticmethod
+    def database_connection():
         """
         This method creates a connection to the databse
         "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         :retun: connection
         """
-        app = cls.APP
-        if not app.config['TESTING']:
-            connection = psycopg2.connect(
-                """dbname='carpooldb' user='carpooldb12' host='localhost'\
-                password='carpooldb12' port='5432'"""
-            )
+        from api import APP
+
+        DATABASE_URL = os.environ['DATABASE_URL']
+
+        if not APP.config['TESTING']:
+            connection = psycopg2.connect(DATABASE_URL, sslmode='require')
             return connection
         connection = psycopg2.connect(
             "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"
         )
         return connection
 
-    @classmethod
-    def create_tables(cls, app):
+    @staticmethod
+    def create_tables(app):
         """
         This method creates tables in the PostgreSQL database.
         It conects to the databse and creates tables one by one
         for command in commands:
                 cur.execute(command)
         """
-        cls.APP = app
         commands = (
             """
-            DROP TABLE IF EXISTS "user" CASCADE;
             CREATE TABLE "user" (
                     user_id SERIAL PRIMARY KEY,
                     first_name VARCHAR(50) NOT NULL,
@@ -52,7 +49,6 @@ class DatabaseAccess(object):
                 )
             """,
             """
-            DROP TABLE IF EXISTS "ride" CASCADE;
             CREATE TABLE "ride" (
                     ride_id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
@@ -65,7 +61,6 @@ class DatabaseAccess(object):
                 )
             """,
             """
-            DROP TABLE IF EXISTS "request" CASCADE;
             CREATE TABLE "request" (
                     request_id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,

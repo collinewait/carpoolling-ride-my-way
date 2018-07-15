@@ -1,9 +1,6 @@
 """
 This module sets up the flask emvironment
 """
-import sys
-import os
-
 from flask import Flask
 from flask_cors import CORS
 from api.handler import ErrorHandler

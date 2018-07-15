@@ -56,7 +56,8 @@ class TestRideTestCase(TestCase):
         self.client().post('/api/v1/rides/', data=json.dumps(
             self.ride2.__dict__), content_type='application/json',
                            headers=({"auth_token": self.generate_token()}))
-        self.client().post('/api/v1/rides/1/requests', headers=({"auth_token": self.generate_token()}))
+        self.client().post('/api/v1/rides/1/requests',
+                           headers=({"auth_token": self.generate_token()}))
 
     def generate_token(self):
         """
