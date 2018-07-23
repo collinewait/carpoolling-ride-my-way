@@ -27,7 +27,7 @@ class User(object):
         from api import APP
         try:
             token = jwt.encode({"user_id": user_id,
-                                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+                                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=2880)},
                                APP.secret_key)
             return token
         except Exception as error:
