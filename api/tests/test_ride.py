@@ -26,13 +26,13 @@ class TestRideTestCase(TestCase):
     user12 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
 
     ride1 = Ride(
-        1, "Ntinda", depart_date, depart_time, 2
+        1, "Muk", "Ntinda", depart_date, depart_time, 2
     )
     ride2 = Ride(
-        2, "Mukon", depart_date, depart_time, 4
+        2, "Kikoni", "Mukon", depart_date, depart_time, 4
     )
     ride3 = Ride(
-        1, "Kawempe", depart_date, depart_time, 3
+        1, "Old park", "Kawempe", depart_date, depart_time, 3
     )
 
     user1 = User("coco", "wait",
@@ -112,7 +112,7 @@ class TestRideTestCase(TestCase):
         self.assertIn("ride", response.json)
         self.assertIn("result retrieved successfully", response.json["message"])
         self.assertIsInstance(response.json['ride'], dict)
-        self.assertEqual(len(response.json['ride']), 7)
+        self.assertEqual(len(response.json['ride']), 8)
 
     def test_ride_attributes_returned(self):
         """
@@ -194,6 +194,7 @@ class TestRideTestCase(TestCase):
         """
         response = self.client().post('/api/v1/rides/', data=json.dumps(
             dict(user_id=2,
+                 departure_location="Kampala",
                  destination="Mbarara",
                  departure_date="", departure_time="",
                  number_of_passengers=2)), content_type='application/json',
@@ -222,7 +223,7 @@ class TestRideTestCase(TestCase):
         (POST request)
         """
         response = self.client().post('/api/v1/rides/1/requests',
-            headers=({"auth_token": self.get_another_token()}))
+                                      headers=({"auth_token": self.get_another_token()}))
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("request", response.json)

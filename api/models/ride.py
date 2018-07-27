@@ -10,11 +10,12 @@ class Ride(object):
 
     def __init__(self, *args):
         self.user_id = args[0]
-        self.destination = args[1]
-        self.departure_date = args[2]
-        self.departure_time = args[3]
-        self.number_of_passengers = args[4]
-        if len(args) > 5:
-            self.ride_id = args[5]
+        self.departure_location = args[1]
+        self.destination = args[2]
+        self.departure_date = args[3]
+        self.departure_time = args[4]
+        self.number_of_passengers = args[5]
+        if len(args) > 6:
+            self.ride_id = args[6]
         else:
             self.ride_id = None

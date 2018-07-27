@@ -30,10 +30,11 @@ class RidesHandler(object):
                 "driver_name": request_tuple[0],
                 "ride_id": request_tuple[1],
                 "driver_id": request_tuple[2],
-                "destination": request_tuple[3],
-                "departure_date": request_tuple[4],
-                "departure_time": request_tuple[5],
-                "number_of_passengers": request_tuple[6]
+                "departure_location": request_tuple[3],
+                "destination": request_tuple[4],
+                "departure_date": request_tuple[5],
+                "departure_time": request_tuple[6],
+                "number_of_passengers": request_tuple[7]
             }
             request_list.append(request_dict)
         return jsonify({"message": "results retrieved successfully",
@@ -54,14 +55,16 @@ class RidesHandler(object):
             user_name = ride_turple[0]
             ride_id = ride_turple[1]
             user_id = ride_turple[2]
-            destination = ride_turple[3]
-            departure_date = ride_turple[4]
-            departure_time = ride_turple[5]
-            number_of_passengers = ride_turple[6]
+            departure_location = ride_turple[3]
+            destination = ride_turple[4]
+            departure_date = ride_turple[5]
+            departure_time = ride_turple[6]
+            number_of_passengers = ride_turple[7]
             return jsonify({"Status code": 200, "ride": {
                 "driver_name": user_name,
                 "ride_id": ride_id,
                 "driver_id": user_id,
+                "departure_location": departure_location,
                 "destination": destination,
                 "departure_date": departure_date,
                 "departure_time": departure_time,
@@ -76,13 +79,14 @@ class RidesHandler(object):
         It takes control from the post() method
         :return
         """
-        keys = ("user_id", "destination", "departure_date",
+        keys = ("user_id", "departure_location", "destination", "departure_date",
                 "departure_time", "number_of_passengers")
         if not set(keys).issubset(set(request.json)):
             return self.request_missing_fields()
 
         request_condition = [
-            request.json["user_id"], request.json["destination"].strip(),
+            request.json["user_id"], request.json["departure_location"].strip(),
+            request.json["destination"].strip(),
             request.json["departure_date"].strip(), request.json["departure_time"].strip(),
             request.json["number_of_passengers"]
             ]
@@ -96,6 +100,7 @@ class RidesHandler(object):
             return self.no_user_found_response("Ride not created", request.json["ride_id"])
 
         ride_existance = self.check_ride_existance(request.json['user_id'],
+                                                   request.json['departure_location'],
                                                    request.json['destination'],
                                                    request.json['departure_date'],
                                                    request.json['departure_time'],
@@ -104,26 +109,28 @@ class RidesHandler(object):
             return jsonify({"message": ride_existance["message"]}), 400
         ride = Ride(
             request.json['user_id'],
+            request.json['departure_location'],
             request.json['destination'],
             request.json['departure_date'],
             request.json['departure_time'],
             request.json['number_of_passengers']
             )
 
-        ride_sql = """INSERT INTO "ride"(user_id, destination,
+        ride_sql = """INSERT INTO "ride"(user_id, departure_location, destination,
                  departure_date, departure_time,
                  number_of_passengers)
-                VALUES((%s), %s, %s, %s, %s);"""
+                VALUES((%s), %s, %s, %s, %s, %s);"""
         db_user_id = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
             (ride.user_id, ))
         ride_data = (
-            db_user_id,
+            db_user_id, ride.departure_location,
             ride.destination, ride.departure_date,
             ride.departure_time, ride.number_of_passengers
             )
         DbTransaction.save(ride_sql, ride_data)
         return jsonify({"status_code": 201, "ride": {
+            "departure_location": ride.departure_location,
             "destination": ride.destination,
             "departure_date": ride.departure_date,
             "departure_time": ride.departure_time,
@@ -205,7 +212,7 @@ class RidesHandler(object):
                         "error_message": "No user found with id: " + str(user_id)
                        }), 400
     @staticmethod
-    def check_ride_existance(user_id, destination,
+    def check_ride_existance(user_id, departure_location, destination,
                              departure_date, departure_time, number_of_passengers):
         """
         This method checks if a ride exists already.
@@ -215,7 +222,7 @@ class RidesHandler(object):
         sql = """SELECT "user_id", "destination", "departure_date", "departure_time",
         "number_of_passengers" FROM "ride" WHERE "user_id" = %s AND "destination" = %s
         AND "departure_date" = %s AND "departure_time" = %s AND "number_of_passengers" = %s"""
-        ride_data = (user_id, destination, departure_date,
+        ride_data = (user_id, departure_location, departure_date,
                      departure_time, number_of_passengers)
         ride = DbTransaction.retrieve_one(sql, ride_data)
         if ride is None:
