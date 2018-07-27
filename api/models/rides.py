@@ -216,7 +216,7 @@ class RidesHandler(object):
                              departure_date, departure_time, number_of_passengers):
         """
         This method checks if a ride exists already.
-        I a ride does not not exists, it returns a success message else
+        If a ride does not not exists, it returns a success message else
         it returns a failure message
         """
         sql = """SELECT "user_id", "destination", "departure_date", "departure_time",
