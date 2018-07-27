@@ -220,7 +220,8 @@ class RidesHandler(object):
         it returns a failure message
         """
         sql = """SELECT "user_id", "destination", "departure_date", "departure_time",
-        "number_of_passengers" FROM "ride" WHERE "user_id" = %s AND "destination" = %s
+        "number_of_passengers" FROM "ride" WHERE "user_id" = %s
+        AND "departure_location" = %s AND "destination" = %s 
         AND "departure_date" = %s AND "departure_time" = %s AND "number_of_passengers" = %s"""
         ride_data = (user_id, departure_location, destination, departure_date,
                      departure_time, number_of_passengers)
