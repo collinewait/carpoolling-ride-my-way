@@ -52,8 +52,8 @@ class DatabaseAccess(object):
             CREATE TABLE "ride" (
                     ride_id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
-                    departure_location VARCHAR(200) NOT NULL,
-                    destination VARCHAR(200) NOT NULL,
+                    departure_location VARCHAR(255) NOT NULL,
+                    destination VARCHAR(255) NOT NULL,
                     departure_date VARCHAR(50) NOT NULL,
                     departure_time VARCHAR(50) NOT NULL,
                     number_of_passengers INTEGER NOT NULL,
