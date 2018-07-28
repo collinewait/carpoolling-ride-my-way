@@ -79,15 +79,16 @@ class RidesHandler(object):
         It takes control from the post() method
         :return
         """
-        keys = ("user_id", "departure_location", "destination", "departure_date",
+        keys = ("departure_location", "destination", "departure_date",
                 "departure_time", "number_of_passengers")
         if not set(keys).issubset(set(request.json)):
             return self.request_missing_fields()
 
         request_condition = [
-            request.json["user_id"], request.json["departure_location"].strip(),
+            request.json["departure_location"].strip(),
             request.json["destination"].strip(),
-            request.json["departure_date"].strip(), request.json["departure_time"].strip(),
+            request.json["departure_date"].strip(), 
+            request.json["departure_time"].strip(),
             request.json["number_of_passengers"]
             ]
 
@@ -99,7 +100,7 @@ class RidesHandler(object):
         if user is None:
             return self.no_user_found_response("Ride not created", request.json["ride_id"])
 
-        ride_existance = self.check_ride_existance(request.json['user_id'],
+        ride_existance = self.check_ride_existance(user,
                                                    request.json['departure_location'],
                                                    request.json['destination'],
                                                    request.json['departure_date'],
@@ -108,7 +109,7 @@ class RidesHandler(object):
         if ride_existance["status"] == "failure":
             return jsonify({"message": ride_existance["message"]}), 400
         ride = Ride(
-            request.json['user_id'],
+            user,
             request.json['departure_location'],
             request.json['destination'],
             request.json['departure_date'],
