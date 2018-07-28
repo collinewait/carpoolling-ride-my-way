@@ -58,7 +58,7 @@ class RideViews(MethodView):
             if not request or not request.json:
                 return jsonify({"status_code": 400, "data": str(request.data),
                                 "error_message": "content not JSON"}), 400
-            return self.rides_handler.post_ride_offer()
+            return self.rides_handler.post_ride_offer(decoded["user_id"])
         return jsonify({"message": "Please login"}), 401
 
 

@@ -73,7 +73,7 @@ class RidesHandler(object):
                             "message": "result retrieved successfully"})
         return self.no_ride_available(ride_id)
 
-    def post_ride_offer(self):
+    def post_ride_offer(self, user_id):
         """
         This method saves a ride offer when a ride_id is not set
         It takes control from the post() method
@@ -87,7 +87,7 @@ class RidesHandler(object):
         request_condition = [
             request.json["departure_location"].strip(),
             request.json["destination"].strip(),
-            request.json["departure_date"].strip(), 
+            request.json["departure_date"].strip(),
             request.json["departure_time"].strip(),
             request.json["number_of_passengers"]
             ]
@@ -96,7 +96,7 @@ class RidesHandler(object):
             return self.fields_missing_info()
         user = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
-            (request.json["user_id"], ))
+            (user_id, ))
         if user is None:
             return self.no_user_found_response("Ride not created", request.json["ride_id"])
 
