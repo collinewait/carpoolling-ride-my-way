@@ -45,5 +45,5 @@ class Urls(object):
                          view_func=RequestsTaken.as_view('user_requests'),
                          methods=["GET",])
         app.add_url_rule('/api/v1/user/rides',
-                         view_func=RidesTaken.as_view('user_requests'),
+                         view_func=RidesTaken.as_view('user_rides'),
                          methods=["GET",])
