@@ -42,8 +42,8 @@ class Urls(object):
                          methods=["POST",])
 
         app.add_url_rule('/api/v1/user/requests',
-                         view_func=RequestsTaken.as_view('user_requsts'),
+                         view_func=RequestsTaken.as_view('user_requests'),
                          methods=["GET",])
-        app.add_url_rule('/api/v1/user/ridess',
-                         view_func=RidesTaken.as_view('user_requsts'),
+        app.add_url_rule('/api/v1/user/rides',
+                         view_func=RidesTaken.as_view('user_requests'),
                          methods=["GET",])
