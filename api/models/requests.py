@@ -35,10 +35,11 @@ class RequestModel(object):
                 request_dict = {
                     "passenger_name": request_tuple[0],
                     "driver_id": request_tuple[1],
-                    "request_id": request_tuple[2],
-                    "user_id": request_tuple[3],
-                    "ride_id": request_tuple[4],
-                    "request_status": request_tuple[5]
+                    "driver_name": request_tuple[2],
+                    "request_id": request_tuple[3],
+                    "user_id": request_tuple[4],
+                    "ride_id": request_tuple[5],
+                    "request_status": request_tuple[6]
                 }
                 request_list.append(request_dict)
 
