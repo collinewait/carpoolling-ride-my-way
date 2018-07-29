@@ -70,7 +70,7 @@ class RequestView(MethodView):
 
     def get(self, ride_id):
         """
-        This class gets all requests made on a ride offer
+        This method gets all requests made on a ride offer
         """
         token = request.headers.get('auth_token')
         if not token:
@@ -97,4 +97,25 @@ class RequestView(MethodView):
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
             return self.request_model.edit_request(ride_id, request_id)
+        return jsonify({"message": "Please login"}), 401
+
+
+class RequestsTaken(MethodView):
+    """
+    This class handles requests made by a specific user
+    by joining a ride
+    """
+    request = RequestModel()
+    def get(self):
+        """
+        This method gets all requests made on a specific user
+        """
+        token = request.headers.get('auth_token')
+        if not token:
+            return jsonify({"message": "Token is missing"}), 401
+        decoded = User.decode_token(request.headers.get('auth_token'))
+        if decoded["state"] == "Failure":
+            return User.decode_failure(decoded["error_message"])
+        if User.check_login_status(decoded["user_id"]):
+            return self.request.return_user_requests(decoded["user_id"])
         return jsonify({"message": "Please login"}), 401
