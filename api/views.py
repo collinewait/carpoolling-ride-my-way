@@ -33,7 +33,9 @@ class RideViews(MethodView):
 
         if User.check_login_status(decoded["user_id"]):
             if not ride_id:
-                return self.rides_handler.return_all_rides()
+                request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
+                ON(ride.user_id = "user".user_id)"""
+                return self.rides_handler.return_all_rides(request_sql)
 
             return self.rides_handler.return_single_ride(ride_id)
         return jsonify({"message": "Please login"}), 401
@@ -118,4 +120,28 @@ class RequestsTaken(MethodView):
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
             return self.request.return_user_requests(decoded["user_id"])
+        return jsonify({"message": "Please login"}), 401
+
+
+class RidesTaken(MethodView):
+    """
+    This class handles rides made by a user
+    """
+    rides = RidesHandler()
+    request = RequestModel()
+    def get(self):
+        """
+        This method gets all ride offers made by a specific user
+        """
+        token = request.headers.get('auth_token')
+        if not token:
+            return jsonify({"message": "Token is missing"}), 401
+        decoded = User.decode_token(request.headers.get('auth_token'))
+        if decoded["state"] == "Failure":
+            return User.decode_failure(decoded["error_message"])
+        if User.check_login_status(decoded["user_id"]):
+            ride_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
+            ON(ride.user_id = "user".user_id) WHERE "ride".user_id = %s """
+            sql_data = (decoded["user_id"], )
+            return self.rides.return_all_rides(ride_sql, sql_data)
         return jsonify({"message": "Please login"}), 401

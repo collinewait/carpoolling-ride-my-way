@@ -15,15 +15,19 @@ class RidesHandler(object):
     Control is obtained from the RidesView class
     """
 
-    def return_all_rides(self):
+    def return_all_rides(self, sql_statement, data=None):
         """
         This method returns all ride offers made
         returns ride offers in a JSON format
         :return
         """
-        request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
-         ON(ride.user_id = "user".user_id)"""
-        requests_turple_list = DbTransaction.retrieve_all(request_sql)
+        sql = sql_statement
+        requests_turple_list = []
+        if  data is not None:
+            requests_turple_list = DbTransaction.retrieve_all(sql, data)
+        else:
+            requests_turple_list = DbTransaction.retrieve_all(sql)
+
         request_list = []
         for request_tuple in requests_turple_list:
             request_dict = {

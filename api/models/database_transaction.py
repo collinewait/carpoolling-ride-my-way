@@ -67,7 +67,7 @@ class DbTransaction(object):
     @staticmethod
     def retrieve_all(sql, data=None):
         """
-        This method gets a single row from the database depending on the
+        This method gets all rows from the database depending on the
         recieved sql command and the data.
         returns the row
         :param:sql
