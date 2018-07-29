@@ -24,16 +24,20 @@ class RequestModel(object):
             (ride_id, ))
 
         if confirm_ride_id:
-            request_sql = """SELECT "user".first_name, request.* FROM "request" LEFT JOIN\
-             "user" ON(request.user_id = "user".user_id) WHERE "ride_id" = %s"""
+            request_sql = """SELECT "user".first_name as passenger, 
+            "ride".user_id as driver_id, request.* FROM request JOIN "user"\
+            ON("request".user_id = "user".user_id) JOIN "ride"\
+            ON("request".ride_id = "ride".ride_id) WHERE "request".ride_id = %s"""
             requests_turple_list = DbTransaction.retrieve_all(request_sql, (ride_id,))
             request_list = []
             for request_tuple in requests_turple_list:
                 request_dict = {
-                    "first_name": request_tuple[0],
-                    "request_id": request_tuple[1],
-                    "user_id": request_tuple[2],
-                    "ride_id": request_tuple[3]
+                    "passenger_name": request_tuple[0],
+                    "driver_id": request_tuple[1],
+                    "request_id": request_tuple[2],
+                    "user_id": request_tuple[3],
+                    "ride_id": request_tuple[4],
+                    "request_status": request_tuple[5]
                 }
                 request_list.append(request_dict)
 
