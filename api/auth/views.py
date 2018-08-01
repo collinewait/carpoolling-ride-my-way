@@ -164,7 +164,7 @@ class Logout(MethodView):
     """
     This class logs out a user from the system
     """
-    def post(self, user_id):
+    def post(self):
         """This method logs out a user"""
         token = request.headers.get('auth_token')
         if not token:
@@ -174,7 +174,7 @@ class Logout(MethodView):
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
-            logout_info = LoginUser.update_user_status(False, user_id)
+            logout_info = LoginUser.update_user_status(False, decoded["user_id"])
             if logout_info["status"] == "success":
                 return jsonify(logout_info), 200
             return jsonify({"status": "failure",

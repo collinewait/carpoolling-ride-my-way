@@ -37,7 +37,7 @@ class Urls(object):
         app.add_url_rule('/api/v1/users/rides/<int:ride_id>/requests/<int:request_id>',
                          view_func=RequestView.as_view('request'),
                          methods=["PUT",])
-        app.add_url_rule('/api/v1/users/logout/<int:user_id>',
+        app.add_url_rule('/api/v1/users/logout',
                          view_func=Logout.as_view('logout_user'),
                          methods=["POST",])
 
