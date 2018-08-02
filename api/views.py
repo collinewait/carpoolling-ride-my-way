@@ -34,9 +34,9 @@ class RideViews(MethodView):
         if User.check_login_status(decoded["user_id"]):
             if not ride_id:
                 request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
-                ON(ride.user_id = "user".user_id)"""
-                return self.rides_handler.return_all_rides(request_sql)
-
+                ON(ride.user_id = "user".user_id) WHERE "ride".user_id != %s"""
+                sql_data = (decoded["user_id"], )
+                return self.rides_handler.return_all_rides(request_sql, sql_data)
             return self.rides_handler.return_single_ride(ride_id)
         return jsonify({"message": "Please login"}), 401
 
