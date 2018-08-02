@@ -123,7 +123,7 @@ class RequestsTaken(MethodView):
         return jsonify({"message": "Please login"}), 401
 
 
-class RidesTaken(MethodView):
+class RidesGiven(MethodView):
     """
     This class handles rides made by a user
     """

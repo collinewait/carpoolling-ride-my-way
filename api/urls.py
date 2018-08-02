@@ -1,7 +1,7 @@
 """
 This module handels requests to urls.
 """
-from api.views import RideViews, RequestView, RequestsTaken, RidesTaken
+from api.views import RideViews, RequestView, RequestsTaken, RidesGiven
 from api.auth.views import RegisterUser, LoginUser, Logout
 
 class Urls(object):
@@ -45,5 +45,5 @@ class Urls(object):
                          view_func=RequestsTaken.as_view('user_requests'),
                          methods=["GET",])
         app.add_url_rule('/api/v1/user/rides',
-                         view_func=RidesTaken.as_view('user_rides'),
+                         view_func=RidesGiven.as_view('user_rides'),
                          methods=["GET",])
