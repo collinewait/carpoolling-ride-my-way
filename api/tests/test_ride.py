@@ -244,7 +244,7 @@ class TestRideTestCase(TestCase):
         (POST request)
         """
         response = self.client().post('/api/v1/rides/1/requests',
-            content_type='application/json',
+                                     content_type='application/json',
                                       headers=({"auth_token": self.generate_token()}))
 
         self.assertEqual(response.status_code, 400)
@@ -331,6 +331,15 @@ class TestRideTestCase(TestCase):
                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("success", response.json["status"])
+
+    def test_invalid_token(self):
+        """
+        This method tests whether api rejects invalid token.
+        """
+        response = self.client().get('/api/v1/user/requests',
+                                     headers=({"auth_token": "xxxxxvvvvvv"}))
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Invalid token. Please log in again.", response.json["message"])
 
     def test_logout(self):
         """
