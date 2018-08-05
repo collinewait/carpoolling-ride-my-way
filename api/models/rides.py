@@ -103,22 +103,22 @@ class RidesHandler(object):
             (user_id, ))
         if user is None:
             return self.no_user_found_response("Ride not created", request.json["ride_id"])
-
-        ride_existance = self.check_ride_existance(user,
-                                                   request.json['departure_location'],
-                                                   request.json['destination'],
-                                                   request.json['departure_date'],
-                                                   request.json['departure_time'],
-                                                   request.json['number_of_passengers'])
+        departure_location = request.json['departure_location']
+        destination = request.json['destination']
+        departure_date = request.json['departure_date']
+        departure_time = request.json['departure_time']
+        number_of_passengers = request.json['number_of_passengers']
+        ride_existance = self.check_ride_existance(user, departure_location, destination,
+                                                   departure_date, departure_time, number_of_passengers)
         if ride_existance["status"] == "failure":
             return jsonify({"message": ride_existance["message"]}), 400
         ride = Ride(
             user,
-            request.json['departure_location'],
-            request.json['destination'],
-            request.json['departure_date'],
-            request.json['departure_time'],
-            request.json['number_of_passengers']
+            departure_location,
+            destination,
+            departure_date,
+            departure_time,
+            number_of_passengers
             )
 
         ride_sql = """INSERT INTO "ride"(user_id, departure_location, destination,
