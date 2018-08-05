@@ -8,7 +8,6 @@ import psycopg2
 from api import APP
 from api.models.user import User
 from api.models.ride import Ride
-from api.models.request import Request
 from api.models.database_connection import DatabaseAccess
 
 
@@ -339,7 +338,16 @@ class TestRideTestCase(TestCase):
         response = self.client().get('/api/v1/user/requests',
                                      headers=({"auth_token": "xxxxxvvvvvv"}))
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Invalid token. Please log in again.", response.json["message"])
+        self.assertEqual("Invalid token. Please log in again.", response.json["message"])
+
+    def test_token_missing(self):
+        """
+        This method tests whether api rejects requests
+        with missing tokens.
+        """
+        response = self.client().get('/api/v1/rides/')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("Token is missing", response.json["message"])
 
     def test_logout(self):
         """
