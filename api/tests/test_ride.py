@@ -271,6 +271,15 @@ class TestRideTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("result retrieved successfully", response.json["message"])
 
+    def test_getting_user_ride_requests(self):
+        """
+        Test API returns requests made by a sinle user.
+        """
+        response = self.client().get('/api/v1/user/requests',
+                                     headers=({"auth_token": self.generate_token()}))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Requests retrieved successfully", response.json["message"])
+
     def test_editing_json_format(self):
         """
         This method tests whether a request sent to make an update
