@@ -13,6 +13,12 @@ class RequestModel(object):
     made on rides
     """
 
+    sql = """ SELECT "user".first_name as passenger,
+            "ride".user_id as driver_id, t1.first_name as driver_name,
+            request.* FROM request JOIN "user" ON("request".user_id = "user".user_id)\
+            JOIN "ride" ON("request".ride_id = "ride".ride_id) JOIN "user" t1\
+            ON(t1.user_id = "ride".user_id)"""
+
     def return_all_requests(self, ride_id):
         """
         This method returns all requests made on a ride offer made
@@ -24,11 +30,7 @@ class RequestModel(object):
             (ride_id, ))
 
         if confirm_ride_id:
-            request_sql = """ SELECT "user".first_name as passenger,
-            "ride".user_id as driver_id, t1.first_name as driver_name,
-            request.* FROM request JOIN "user" ON("request".user_id = "user".user_id)\
-            JOIN "ride" ON("request".ride_id = "ride".ride_id) JOIN "user" t1\
-            ON(t1.user_id = "ride".user_id) WHERE "request".ride_id = %s"""
+            request_sql = self.sql + """ WHERE "request".ride_id = %s"""
             requests_turple_list = DbTransaction.retrieve_all(request_sql, (ride_id,))
             request_list = []
             for request_tuple in requests_turple_list:
@@ -57,11 +59,7 @@ class RequestModel(object):
             (user_id, ))
 
         if confirm_user_id:
-            request_sql = """ SELECT "user".first_name as passenger,
-            "ride".user_id as driver_id, t1.first_name as driver_name,
-            request.* FROM request JOIN "user" ON("request".user_id = "user".user_id)\
-            JOIN "ride" ON("request".ride_id = "ride".ride_id) JOIN "user" t1\
-            ON(t1.user_id = "ride".user_id) WHERE "request".user_id = %s"""
+            request_sql = self.sql + """ WHERE "request".user_id = %s"""
             requests_turple_list = DbTransaction.retrieve_all(request_sql, (user_id,))
             request_list = []
             for request_tuple in requests_turple_list:
