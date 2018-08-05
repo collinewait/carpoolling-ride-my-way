@@ -277,7 +277,7 @@ class TestRideTestCase(TestCase):
         response = self.client().get('/api/v1/user/requests',
                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Requests retrieved successfully", response.json["message"])
+        self.assertIn("result retrieved successfully", response.json["message"])
 
     def test_editing_json_format(self):
         """

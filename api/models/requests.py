@@ -19,19 +19,31 @@ class RequestModel(object):
             JOIN "ride" ON("request".ride_id = "ride".ride_id) JOIN "user" t1\
             ON(t1.user_id = "ride".user_id)"""
 
-    def return_all_requests(self, ride_id):
+    def return_all_requests(self, ride_id=None, user_id=None):
         """
         This method returns all requests made on a ride offer made
         returns ride offers in a JSON format
         :return
         """
-        confirm_ride_id = DbTransaction.retrieve_one(
-            """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
-            (ride_id, ))
+        confirm_id = None
+        request_sql = None
+        request_data = None
 
-        if confirm_ride_id:
+        if user_id:
+            confirm_id = DbTransaction.retrieve_one(
+                """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
+                (user_id, ))
+            request_sql = request_sql = self.sql + """ WHERE "request".user_id = %s"""
+            request_data = (user_id, )
+        else:
+            confirm_id = DbTransaction.retrieve_one(
+                """SELECT "ride_id" FROM "ride" WHERE "ride_id" = %s""",
+                (ride_id, ))
             request_sql = self.sql + """ WHERE "request".ride_id = %s"""
-            requests_turple_list = DbTransaction.retrieve_all(request_sql, (ride_id,))
+            request_data = (ride_id, )
+
+        if confirm_id:
+            requests_turple_list = DbTransaction.retrieve_all(request_sql, request_data)
             request_list = []
             for request_tuple in requests_turple_list:
                 request_dict = {
@@ -47,36 +59,9 @@ class RequestModel(object):
 
             return jsonify({"message": "result retrieved successfully",
                             "requests": request_list}), 200
+        if user_id:
+            RidesHandler.no_user_found_response("No requests found", user_id)
         return RidesHandler.no_ride_available(ride_id)
-
-    def return_user_requests(self, user_id):
-        """
-        This method returns all requests made by a specific user
-        :return
-        """
-        confirm_user_id = DbTransaction.retrieve_one(
-            """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
-            (user_id, ))
-
-        if confirm_user_id:
-            request_sql = self.sql + """ WHERE "request".user_id = %s"""
-            requests_turple_list = DbTransaction.retrieve_all(request_sql, (user_id,))
-            request_list = []
-            for request_tuple in requests_turple_list:
-                request_dict = {
-                    "passenger_name": request_tuple[0],
-                    "driver_id": request_tuple[1],
-                    "driver_name": request_tuple[2],
-                    "request_id": request_tuple[3],
-                    "user_id": request_tuple[4],
-                    "ride_id": request_tuple[5],
-                    "request_status": request_tuple[6]
-                }
-                request_list.append(request_dict)
-
-            return jsonify({"message": "Requests retrieved successfully",
-                            "requests": request_list}), 200
-        return RidesHandler.no_user_found_response("No requests found", user_id)
 
     def edit_request(self, ride_id, request_id):
         """

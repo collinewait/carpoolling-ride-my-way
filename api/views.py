@@ -119,7 +119,7 @@ class RequestsTaken(MethodView):
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
-            return self.request.return_user_requests(decoded["user_id"])
+            return self.request.return_all_requests(decoded["user_id"])
         return jsonify({"message": "Please login"}), 401
 
 
