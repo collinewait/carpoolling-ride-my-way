@@ -349,6 +349,19 @@ class TestRideTestCase(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual("Token is missing", response.json["message"])
 
+    def test_user_not_loogedin(self):
+        """
+        This method tests that a logged out user doesnot access the end point
+        """
+        user_token = self.generate_token()
+        self.client().post('/api/v1/users/logout',
+                           headers=({"auth_token": user_token}))
+        response = self.client().post('/api/v1/users/logout',
+                                      headers=({"auth_token": user_token}))
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual("Please login", response.json["message"])
+
+
     def test_logout(self):
         """
         This method tests that a user is able to logout
