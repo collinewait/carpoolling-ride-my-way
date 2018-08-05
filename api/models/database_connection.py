@@ -18,10 +18,14 @@ class DatabaseAccess(object):
         """
         from api import APP
 
-        DATABASE_URL = os.environ['DATABASE_URL']
+        #DATABASE_URL = os.environ['DATABASE_URL']
 
         if not APP.config['TESTING']:
-            connection = psycopg2.connect(DATABASE_URL, sslmode='require')
+            connection = psycopg2.connect(
+                """dbname='carpooldb' user='carpooldb12' host='localhost'\
+                password='carpooldb12' port='5432'"""
+            )
+
             return connection
         connection = psycopg2.connect(
             "dbname='testdb' user='test123' host='localhost' password='test123' port='5432'"

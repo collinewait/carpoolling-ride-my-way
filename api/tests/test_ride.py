@@ -97,8 +97,6 @@ class TestRideTestCase(TestCase):
                                      headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json['rides'], list)
-        self.assertTrue(response.json["rides"])
-        self.assertIsInstance(response.json["rides"][0], dict)
         self.assertIn("results retrieved successfully", response.json["message"])
 
     def test_get_one_ride_offer(self):
@@ -319,7 +317,7 @@ class TestRideTestCase(TestCase):
         """
         This method tests that a user is able to logout
         """
-        response = self.client().post('/api/v1/users/logout/1',
+        response = self.client().post('/api/v1/users/logout',
                                       headers=({"auth_token": self.generate_token()}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual("You are logged out successfully", response.json["message"])
@@ -337,7 +335,7 @@ class TestRideTestCase(TestCase):
         of the system. Firts logs out the user and then checks user
         status.
         """
-        self.client().post('/api/v1/users/logout/1',
+        self.client().post('/api/v1/users/logout',
                            headers=({"auth_token": self.generate_token()}))
         response = User.check_login_status(1)
         self.assertEqual(False, response)
