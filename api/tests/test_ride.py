@@ -99,6 +99,16 @@ class TestRideTestCase(TestCase):
         self.assertIsInstance(response.json['rides'], list)
         self.assertIn("results retrieved successfully", response.json["message"])
 
+    def test_api_gets_user_ride_offers(self):
+        """
+        Test API can get all ride offers for a single user.
+        """
+        response = self.client().get('/api/v1/rides/',
+                                     headers=({"auth_token": self.generate_token()}))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json['rides'], list)
+        self.assertIn("results retrieved successfully", response.json["message"])
+
     def test_get_one_ride_offer(self):
         """
         Test an item (a ride) is returned on a get request.
