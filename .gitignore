@@ -1,2 +1,12 @@
 *.pyc
+
+
+# Unit test / coverage reports
+.coverage
 .pytest_cache/
+
+# Environments
+ride
+
+#Editor
+.vscode
