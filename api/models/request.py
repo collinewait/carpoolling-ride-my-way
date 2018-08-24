@@ -24,3 +24,13 @@ class Request(object):
         request_data = (self.user_id, self.ride_id)
         DbTransaction.save(request_sql, request_data)
         
+    def return_request_information(self):
+        """
+        This method returns the information of a class.
+        """
+        
+        return {
+            "user_id": self.user_id,
+            "ride_id": self.ride_id
+        }
+        
