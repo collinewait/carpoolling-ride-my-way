@@ -6,6 +6,7 @@ from flask import jsonify, request
 from api.models.ride import Ride
 from api.models.request import Request
 from api.models.database_transaction import DbTransaction
+from api.models.error_messages import ErrorMessage
 
 
 class RidesHandler(object):
@@ -14,6 +15,8 @@ class RidesHandler(object):
     requests made on the API end point
     Control is obtained from the RidesView class
     """
+
+    error_message = ErrorMessage()
 
     def return_all_rides(self, sql_statement, data=None):
         """
@@ -75,7 +78,7 @@ class RidesHandler(object):
                 "number_of_passengers": number_of_passengers
             },
                             "message": "result retrieved successfully"})
-        return self.no_ride_available(ride_id)
+        return self.error_message.no_ride_available(ride_id)
 
     def post_ride_offer(self, user_id):
         """
@@ -86,7 +89,7 @@ class RidesHandler(object):
         keys = ("departure_location", "destination", "departure_date",
                 "departure_time", "number_of_passengers")
         if not set(keys).issubset(set(request.json)):
-            return self.request_missing_fields()
+            return self.error_message.request_missing_fields()
 
         request_condition = [
             request.json["departure_location"].strip(),
@@ -97,12 +100,13 @@ class RidesHandler(object):
             ]
 
         if not all(request_condition):
-            return self.fields_missing_info()
+            return self.error_message.fields_missing_information(request.json)
+
         user = DbTransaction.retrieve_one(
             """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
             (user_id, ))
         if user is None:
-            return self.no_user_found_response("Ride not created", request.json["ride_id"])
+            return self.error_message.no_user_found_response("Ride not created", request.json["ride_id"])
         departure_location = request.json['departure_location']
         destination = request.json['destination']
         departure_date = request.json['departure_date']
@@ -139,9 +143,9 @@ class RidesHandler(object):
             (ride_id, ))
 
         if db_user_id is None:
-            return self.no_user_found_response("Request not made", ride_id)
+            return self.error_message.no_user_found_response("Request not made", ride_id)
         if db_ride_id is None:
-            return self.no_ride_available(ride_id)
+            return self.error_message.no_ride_available(ride_id)
 
         check_request = self.check_request_existance(user_id, ride_id)
         if check_request["status"] == "failure":
@@ -154,47 +158,6 @@ class RidesHandler(object):
                        "request": ride_request.return_request_information(),
                         "message": "request sent successfully"}), 201
 
-    @staticmethod
-    def fields_missing_info():
-        """
-        This method returns a JSON response when some fields in
-        the data sent are missing
-        :return
-        """
-        return jsonify({"status": "failure",
-                        "status_code": 400, "data": request.json,
-                        "error_message": "Some fields are empty"}), 400
-    @staticmethod
-    def request_missing_fields():
-        """
-        This method returns a JSON response when containg the
-        error message that some fields are missing
-        :return
-        """
-        return jsonify({"status": "failure",
-                        "error_message": "some of these fields are missing"}), 400
-
-    @staticmethod
-    def no_ride_available(ride_id):
-        """
-        This method returns a JSON response with a message of no ride
-        found
-        :return
-        """
-        return jsonify({"status": "failure",
-                        "message": "No ride available with id: " + str(ride_id)}), 200
-
-    @staticmethod
-    def no_user_found_response(message, user_id):
-        """
-        This method returns an error message when a user
-        of a specific id is not found
-        :return:
-        """
-        return jsonify({"status": "failure",
-                        "message": message,
-                        "error_message": "No user found with id: " + str(user_id)
-                       }), 400
     @staticmethod
     def check_ride_existance(user_id, departure_location, destination,
                              departure_date, departure_time, number_of_passengers):

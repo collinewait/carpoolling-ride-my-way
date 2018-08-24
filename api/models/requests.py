@@ -4,6 +4,7 @@ This module is respomsible for request end points.
 from flask import jsonify, request
 from api.models.database_transaction import DbTransaction
 from api.models.rides import RidesHandler
+from api.models.error_messages import ErrorMessage
 
 
 class RequestModel(object):
@@ -12,6 +13,8 @@ class RequestModel(object):
     requests made on the API end point in regard to requests
     made on rides
     """
+
+    error_message = ErrorMessage()
 
     sql = """ SELECT "user".first_name as passenger,
             "ride".user_id as driver_id, t1.first_name as driver_name,
@@ -61,7 +64,7 @@ class RequestModel(object):
                             "requests": request_list}), 200
         if user_id:
             RidesHandler.no_user_found_response("No requests found", user_id)
-        return RidesHandler.no_ride_available(ride_id)
+        return self.error_message.no_ride_available(ride_id)
 
     def edit_request(self, ride_id, request_id):
         """
@@ -85,16 +88,7 @@ class RequestModel(object):
                     return jsonify({"status": "success",
                                     "message": "request " + request.json["request_status"] + " successfully.\
                                     " + str(nummber_of_updated_rows) + " row(s) updated"}), 200
-                return self.no_request_found(request_id)
-            return RidesHandler.no_ride_available(ride_id)
+                return self.error_message.no_request_found(request_id)
+            return self.error_message.no_ride_available(ride_id)
         return jsonify({"Staus": "failure", "message": "Content-type must be JSON"}), 400
 
-    @staticmethod
-    def no_request_found(request_id):
-        """
-        Returns a message of no vailable request of a specific id
-        No request available with id: #
-        :return
-        """
-        return jsonify({"status": "failure",
-                        "message": "No request available with id: " + str(request_id)}), 200
