@@ -122,13 +122,7 @@ class RidesHandler(object):
             )
 
         ride.save_ride_offer()
-        return jsonify({"status_code": 201, "ride": {
-            "departure_location": ride.departure_location,
-            "destination": ride.destination,
-            "departure_date": ride.departure_date,
-            "departure_time": ride.departure_time,
-            "number_of_passengers": ride.number_of_passengers
-        },
+        return jsonify({"status_code": 201, "ride": ride.get_ride_information(),
                         "message": "Ride added successfully"}), 201
 
     def post_request_to_ride_offer(self, user_id, ride_id):

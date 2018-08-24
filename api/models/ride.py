@@ -36,3 +36,16 @@ class Ride(object):
             self.departure_time, self.number_of_passengers
             )
         DbTransaction.save(ride_sql, ride_data)
+
+    def get_ride_information(self):
+        """
+        This method returns the information of a ride.
+        """
+
+        return {
+            "departure_location": self.departure_location,
+            "destination": self.destination,
+            "departure_date": self.departure_date,
+            "departure_time": self.departure_time,
+            "number_of_passengers": self.number_of_passengers
+        }
