@@ -147,10 +147,9 @@ class RidesHandler(object):
         if check_request["status"] == "failure":
             return jsonify({"message": check_request["message"]}), 400
         ride_request = Request(user_id, ride_id)
-        ride_sql = """INSERT INTO "request"(user_id, ride_id)
-            VALUES((%s), (%s));"""
-        request_data = (user_id, ride_id)
-        DbTransaction.save(ride_sql, request_data)
+        
+        ride_request.save_request()
+
         return jsonify({"Status code": 201, "request": {
             "user_id": ride_request.user_id,
             "ride_id": ride_request.ride_id
