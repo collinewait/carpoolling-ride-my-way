@@ -121,19 +121,7 @@ class RidesHandler(object):
             number_of_passengers
             )
 
-        ride_sql = """INSERT INTO "ride"(user_id, departure_location, destination,
-                 departure_date, departure_time,
-                 number_of_passengers)
-                VALUES((%s), %s, %s, %s, %s, %s);"""
-        db_user_id = DbTransaction.retrieve_one(
-            """SELECT "user_id" FROM "user" WHERE "user_id" = %s""",
-            (ride.user_id, ))
-        ride_data = (
-            db_user_id, ride.departure_location,
-            ride.destination, ride.departure_date,
-            ride.departure_time, ride.number_of_passengers
-            )
-        DbTransaction.save(ride_sql, ride_data)
+        ride.save_ride_offer()
         return jsonify({"status_code": 201, "ride": {
             "departure_location": ride.departure_location,
             "destination": ride.destination,
