@@ -112,18 +112,13 @@ class RidesHandler(object):
         departure_date = request.json['departure_date']
         departure_time = request.json['departure_time']
         number_of_passengers = request.json['number_of_passengers']
-        ride_existance = self.check_ride_existance(user, departure_location, destination,
-                                                   departure_date, departure_time, number_of_passengers)
+
+        ride = Ride(user, departure_location, destination,
+                    departure_date, departure_time, number_of_passengers
+                )
+        ride_existance = ride.check_ride_existance()
         if ride_existance["status"] == "failure":
             return jsonify({"message": ride_existance["message"]}), 400
-        ride = Ride(
-            user,
-            departure_location,
-            destination,
-            departure_date,
-            departure_time,
-            number_of_passengers
-            )
 
         ride.save_ride_offer()
         return jsonify({"status_code": 201, "ride": ride.get_ride_information(),
@@ -157,25 +152,6 @@ class RidesHandler(object):
         return jsonify({"Status code": 201, 
                        "request": ride_request.return_request_information(),
                         "message": "request sent successfully"}), 201
-
-    @staticmethod
-    def check_ride_existance(user_id, departure_location, destination,
-                             departure_date, departure_time, number_of_passengers):
-        """
-        This method checks if a ride exists already.
-        If a ride does not not exists, it returns a success message else
-        it returns a failure message
-        """
-        sql = """SELECT "user_id", "destination", "departure_date", "departure_time",
-        "number_of_passengers" FROM "ride" WHERE "user_id" = %s
-        AND "departure_location" = %s AND "destination" = %s 
-        AND "departure_date" = %s AND "departure_time" = %s AND "number_of_passengers" = %s"""
-        ride_data = (user_id, departure_location, destination, departure_date,
-                     departure_time, number_of_passengers)
-        ride = DbTransaction.retrieve_one(sql, ride_data)
-        if ride is None:
-            return {"status": "success", "message": "Ride does not exists"}
-        return {"status": "failure", "message": "Ride already exists"}
 
     @staticmethod
     def check_request_existance(user_id, ride_id):

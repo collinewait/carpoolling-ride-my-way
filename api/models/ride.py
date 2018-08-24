@@ -49,3 +49,20 @@ class Ride(object):
             "departure_time": self.departure_time,
             "number_of_passengers": self.number_of_passengers
         }
+
+    def check_ride_existance(self):
+        """
+        This method checks if a ride exists already.
+        If a ride does not not exists, it returns a success message else
+        it returns a failure message
+        """
+        sql = """SELECT "user_id", "destination", "departure_date", "departure_time",
+        "number_of_passengers" FROM "ride" WHERE "user_id" = %s
+        AND "departure_location" = %s AND "destination" = %s 
+        AND "departure_date" = %s AND "departure_time" = %s AND "number_of_passengers" = %s"""
+        ride_data = (self.user_id, self.departure_location, self.destination, self.departure_date,
+                    self.departure_time, self.number_of_passengers)
+        ride = DbTransaction.retrieve_one(sql, ride_data)
+        if ride is None:
+            return {"status": "success", "message": "Ride does not exists"}
+        return {"status": "failure", "message": "Ride already exists"}
