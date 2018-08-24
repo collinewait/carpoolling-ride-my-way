@@ -142,28 +142,14 @@ class RidesHandler(object):
         if db_ride_id is None:
             return self.error_message.no_ride_available(ride_id)
 
-        check_request = self.check_request_existance(user_id, ride_id)
-        if check_request["status"] == "failure":
-            return jsonify({"message": check_request["message"]}), 400
         ride_request = Request(user_id, ride_id)
 
+        check_request = ride_request.check_request_existance()
+        if check_request["status"] == "failure":
+            return jsonify({"message": check_request["message"]}), 400
+        
         ride_request.save_request()
 
         return jsonify({"Status code": 201, 
                        "request": ride_request.return_request_information(),
                         "message": "request sent successfully"}), 201
-
-    @staticmethod
-    def check_request_existance(user_id, ride_id):
-        """
-        Checks the existance of a request made by a user.
-        I a request exists, it returns a failure message that the request already exists
-        otherwise, a success message is returned showing that a request does not exist.
-        """
-        check_sql = """SELECT "user_id", "ride_id" FROM "request"
-        WHERE "user_id" = %s AND "ride_id" = %s"""
-        request_data = (user_id, ride_id)
-        ride_request = DbTransaction.retrieve_one(check_sql, request_data)
-        if ride_request is None:
-            return {"status": "success", "message": "Request does not exists"}
-        return {"status": "failure", "message": "Request already exists"}
