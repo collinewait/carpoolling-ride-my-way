@@ -18,6 +18,17 @@ class User(object):
         self.phone_number = args[3]
         self.password = args[4]
 
+    def save_user(self):
+        """
+        This method saves a user instance in the database.
+        """
+        user_data = (self.first_name, self.last_name,
+                     self.email_address, self.phone_number, self.password)
+        user_sql = """INSERT INTO "user"(first_name, last_name, email_address,
+            phone_number, password)
+            VALUES(%s, %s, %s, %s, %s);"""
+        DbTransaction.save(user_sql, user_data) 
+
     @staticmethod
     def encode_token(user_id):
         """

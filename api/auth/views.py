@@ -14,7 +14,7 @@ class RegisterUser(MethodView):
     """
     View function to register a user via the api
     """
-
+    
     def post(self):
         """
         Register a user, generate their token and add them to the database
@@ -36,12 +36,7 @@ class RegisterUser(MethodView):
                             post_data['email_address'], post_data['phone_number'],
                             hashed_password)
 
-            user_sql = """INSERT INTO "user"(first_name, last_name, email_address,
-            phone_number, password)
-            VALUES(%s, %s, %s, %s, %s);"""
-            data = (new_user.first_name, new_user.last_name,
-                    new_user.email_address, new_user.phone_number, new_user.password)
-            DbTransaction.save(user_sql, data)
+            new_user.save_user()
             return jsonify({'message': 'Successfully registered',
                             "user": {"first_name": new_user.first_name,
                                      "last_name": new_user.last_name,
@@ -55,7 +50,7 @@ class RegisterUser(MethodView):
     def verify_user_on_signup(user_request):
         """
         This method verifies a user when creating an account
-        If valid, an account is created
+        If valid, it returns a success massage
         Else it returns an error message
         :param:user_response:
         :return:
