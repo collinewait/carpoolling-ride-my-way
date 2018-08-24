@@ -38,13 +38,9 @@ class RegisterUser(MethodView):
 
             new_user.save_user()
             return jsonify({'message': 'Successfully registered',
-                            "user": {"first_name": new_user.first_name,
-                                     "last_name": new_user.last_name,
-                                     "email_address": new_user.email_address,
-                                     "phone_number": new_user.phone_number}}), 201
+                            "user": new_user.return_user_details()}), 201
         return jsonify({"error_message": 'Failed, User already exists,' +
                                          'Please sign In'}), 400
-
 
     @staticmethod
     def verify_user_on_signup(user_request):

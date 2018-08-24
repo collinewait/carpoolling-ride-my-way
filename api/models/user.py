@@ -27,7 +27,19 @@ class User(object):
         user_sql = """INSERT INTO "user"(first_name, last_name, email_address,
             phone_number, password)
             VALUES(%s, %s, %s, %s, %s);"""
-        DbTransaction.save(user_sql, user_data) 
+        DbTransaction.save(user_sql, user_data)
+
+    def return_user_details(self):
+        """
+        This method returns the details of the user
+        in json format.
+        """ 
+        return {
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email_address": self.email_address,
+            "phone_number": self.phone_number
+        }
 
     @staticmethod
     def encode_token(user_id):
