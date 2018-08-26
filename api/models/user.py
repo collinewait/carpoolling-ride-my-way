@@ -12,11 +12,12 @@ class User(object):
     This class represents a User entity
     """
     def __init__(self, *args):
-        self.first_name = args[0]
-        self.last_name = args[1]
-        self.email_address = args[2]
-        self.phone_number = args[3]
-        self.password = args[4]
+        if args:
+            self.first_name = args[0]
+            self.last_name = args[1]
+            self.email_address = args[2]
+            self.phone_number = args[3]
+            self.password = args[4]
 
     def save_user(self):
         """
@@ -41,8 +42,7 @@ class User(object):
             "phone_number": self.phone_number
         }
 
-    @staticmethod
-    def encode_token(user_id):
+    def encode_token(self, user_id):
         """
         Generates the Auth Token
         :return: string
@@ -55,6 +55,7 @@ class User(object):
             return token
         except Exception as error:
             return error
+
 
     @staticmethod
     def decode_token(auth_token):

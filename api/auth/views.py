@@ -85,7 +85,8 @@ class LoginUser(MethodView):
     """
     This class is responsible for signing in a user.
     """
-
+    user = User()
+    
     def post(self):
         """
         This method Logs a user in if the supplied credentials are correct.
@@ -106,9 +107,8 @@ class LoginUser(MethodView):
             return jsonify({"message": verified_user["error_message"]}), 401
         self.update_user_status(True, user[0])
         return jsonify(verified_user), 200
-
-    @staticmethod
-    def verify_user_on_login(user, password):
+   
+    def verify_user_on_login(self, user, password):
         """
         This method verifies a user before having access to the system
         If valid, It returns a success message with a token
@@ -120,7 +120,7 @@ class LoginUser(MethodView):
             return {"status": "failure",
                     'error_message': 'Please enter valid Email address'}
         if check_password_hash(user[5], password):
-            auth_token = User.encode_token(user[0])
+            auth_token = self.user.encode_token(user[0])
             if auth_token:
                 response = {"status": "success", "message": "Successfully logged in.",
                             "auth_token": auth_token.decode()

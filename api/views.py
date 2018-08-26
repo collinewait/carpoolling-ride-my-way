@@ -83,6 +83,7 @@ class RequestView(MethodView):
         if User.check_login_status(decoded["user_id"]):
             return self.request_model.return_all_requests(ride_id)
         return jsonify({"message": "Please login"}), 401
+
     def put(self, ride_id, request_id):
         """
         This method Edits a request with a valid Id. The request content-type must be json
@@ -108,6 +109,7 @@ class RequestsTaken(MethodView):
     by joining a ride
     """
     request = RequestModel()
+
     def get(self):
         """
         This method gets all requests made on a specific user
@@ -129,6 +131,7 @@ class RidesGiven(MethodView):
     """
     rides = RidesHandler()
     request = RequestModel()
+    
     def get(self):
         """
         This method gets all ride offers made by a specific user
