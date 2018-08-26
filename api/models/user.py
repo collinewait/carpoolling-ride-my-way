@@ -47,7 +47,7 @@ class User(object):
         """
         This method verifies a user when creating an account
         If valid, it returns a success massage
-        Else it returns an error message
+        Else it returns an e\rror message
         :param:user_response:
         :return:
         """
@@ -75,6 +75,23 @@ class User(object):
 
         return {"status": "failure",
                 "error_message": "Missing or wrong email format"}
+
+    def update_user_status(self, status, user_id):
+        """
+        This method updates a user login status when logged in to true
+        and to false when a user logs out.
+        """
+        user_status_update_sql = """UPDATE "user" SET is_loggedin = %s
+                    WHERE user_id = %s"""
+        if status:
+            edit_data = (True, user_id)
+        else:
+            edit_data = (False, user_id)
+        DbTransaction.edit(user_status_update_sql, edit_data)
+        if status:
+            return None
+        return {"status": "success",
+                'message': 'You are logged out successfully'}
 
     def encode_token(self, user_id):
         """
