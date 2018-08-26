@@ -1,6 +1,7 @@
 """
 This module is a ride model with its attributes
 """
+import re
 import datetime
 import jwt
 from flask import jsonify
@@ -41,6 +42,39 @@ class User(object):
             "email_address": self.email_address,
             "phone_number": self.phone_number
         }
+
+    def verify_user_on_signup(self, user_request):
+        """
+        This method verifies a user when creating an account
+        If valid, it returns a success massage
+        Else it returns an error message
+        :param:user_response:
+        :return:
+        """
+        keys = ("first_name", "last_name", "email_address",
+                "phone_number", "password")
+        if not set(keys).issubset(set(user_request)):
+            return {"status": "failure",
+                    "error_message": "Some fields are missing, all fields are required"}
+
+        user_condition = [
+            user_request["first_name"].strip(),
+            user_request["last_name"].strip(),
+            user_request["email_address"].strip(),
+            user_request["phone_number"].strip(),
+            user_request["password"].strip()
+        ]
+
+        if not all(user_condition):
+            return {"status": "failure",
+                    "error_message": "Some fields are not defined"}
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", user_request["email_address"]):
+            return {"status": "success",
+                    "message": "valid details"}
+
+        return {"status": "failure",
+                "error_message": "Missing or wrong email format"}
 
     def encode_token(self, user_id):
         """

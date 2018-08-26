@@ -2,7 +2,6 @@
 This module handles user account creation and
 user authentication
 """
-import re
 from flask import request, jsonify
 from flask.views import MethodView
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -15,6 +14,8 @@ class RegisterUser(MethodView):
     View function to register a user via the api
     """
     
+    user_obj = User()
+
     def post(self):
         """
         Register a user, generate their token and add them to the database
@@ -22,63 +23,28 @@ class RegisterUser(MethodView):
         """
         post_data = request.get_json()
 
-        if self.verify_user_on_signup(post_data)["status"] == "failure":
-            return jsonify({
-                "error_message": self.verify_user_on_signup(post_data)["error_message"]}), 400
-
-        hashed_password = generate_password_hash(post_data['password'], method='sha256')
-
-        query = """SELECT * FROM "user" WHERE "email_address" = %s"""
-        user_turple = DbTransaction.retrieve_one(query, (post_data['email_address'], ))
-
-        if not user_turple:
-            new_user = User(post_data['first_name'], post_data['last_name'],
-                            post_data['email_address'], post_data['phone_number'],
-                            hashed_password)
-
-            new_user.save_user()
-            return jsonify({'message': 'Successfully registered',
-                            "user": new_user.return_user_details()}), 201
-        return jsonify({"error_message": 'Failed, User already exists,' +
-                                         'Please sign In'}), 400
-
-    @staticmethod
-    def verify_user_on_signup(user_request):
-        """
-        This method verifies a user when creating an account
-        If valid, it returns a success massage
-        Else it returns an error message
-        :param:user_response:
-        :return:
-        """
         if request.content_type == 'application/json':
+            if self.user_obj.verify_user_on_signup(post_data)["status"] == "failure":
+                return jsonify({
+                    "error_message": self.user_obj.verify_user_on_signup(post_data)["error_message"]}), 400
 
-            keys = ("first_name", "last_name", "email_address",
-                    "phone_number", "password")
-            if not set(keys).issubset(set(user_request)):
-                return {"status": "failure",
-                        "error_message": "Some fields are missing, all fields are required"}
+            hashed_password = generate_password_hash(post_data['password'], method='sha256')
 
-            user_condition = [
-                user_request["first_name"].strip(),
-                user_request["last_name"].strip(),
-                user_request["email_address"].strip(),
-                user_request["phone_number"].strip(),
-                user_request["password"].strip()
-            ]
+            query = """SELECT * FROM "user" WHERE "email_address" = %s"""
+            user_turple = DbTransaction.retrieve_one(query, (post_data['email_address'], ))
 
-            if not all(user_condition):
-                return {"status": "failure",
-                        "error_message": "Some fields are not defined"}
+            if not user_turple:
+                new_user = User(post_data['first_name'], post_data['last_name'],
+                                post_data['email_address'], post_data['phone_number'],
+                                hashed_password)
 
-            if re.match(r"[^@]+@[^@]+\.[^@]+", user_request["email_address"]):
-                return {"status": "success",
-                        "message": "valid details"}
-
-            return {"status": "failure",
-                    "error_message": "Missing or wrong email format"}
-        return {"status": "failure",
-                "error_message": "Failed Content-type must be json"}
+                new_user.save_user()
+                return jsonify({'message': 'Successfully registered',
+                                "user": new_user.return_user_details()}), 201
+            return jsonify({"error_message": 'Failed, User already exists,' +
+                                            'Please sign In'}), 400
+        return jsonify({"status": "failure",
+                "error_message": "Failed Content-type must be json"}), 400
 
 
 class LoginUser(MethodView):
