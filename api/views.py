@@ -15,6 +15,8 @@ class RideViews(MethodView):
 
     rides_handler = RidesHandler()
 
+    user_obj = User()
+
     def get(self, ride_id):
         """
         All ride offers are returned when no ride_id is specified at the end point
@@ -27,7 +29,7 @@ class RideViews(MethodView):
         if not token:
             return jsonify({"message": "Token is missing"}), 401
 
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
 
@@ -51,7 +53,7 @@ class RideViews(MethodView):
         if not token:
             return jsonify({"message": "Token is missing"}), 401
 
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
@@ -70,6 +72,8 @@ class RequestView(MethodView):
     """
     request_model = RequestModel()
 
+    user_obj = User()
+
     def get(self, ride_id):
         """
         This method gets all requests made on a ride offer
@@ -77,7 +81,7 @@ class RequestView(MethodView):
         token = request.headers.get('auth_token')
         if not token:
             return jsonify({"message": "Token is missing"}), 401
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
@@ -95,7 +99,7 @@ class RequestView(MethodView):
         token = request.headers.get('auth_token')
         if not token:
             return jsonify({"message": "Token is missing"}), 401
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
@@ -109,6 +113,7 @@ class RequestsTaken(MethodView):
     by joining a ride
     """
     request = RequestModel()
+    user_obj = User()
 
     def get(self):
         """
@@ -117,7 +122,7 @@ class RequestsTaken(MethodView):
         token = request.headers.get('auth_token')
         if not token:
             return jsonify({"message": "Token is missing"}), 401
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
@@ -131,6 +136,7 @@ class RidesGiven(MethodView):
     """
     rides = RidesHandler()
     request = RequestModel()
+    user_obj = User()
     
     def get(self):
         """
@@ -139,7 +145,7 @@ class RidesGiven(MethodView):
         token = request.headers.get('auth_token')
         if not token:
             return jsonify({"message": "Token is missing"}), 401
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):

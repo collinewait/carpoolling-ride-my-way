@@ -56,9 +56,7 @@ class User(object):
         except Exception as error:
             return error
 
-
-    @staticmethod
-    def decode_token(auth_token):
+    def decode_token(self, auth_token):
         """
         Decodes the auth token and returns the user public id
         :param auth_token:

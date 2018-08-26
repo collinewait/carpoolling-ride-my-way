@@ -86,7 +86,7 @@ class LoginUser(MethodView):
     This class is responsible for signing in a user.
     """
     user = User()
-    
+
     def post(self):
         """
         This method Logs a user in if the supplied credentials are correct.
@@ -155,13 +155,16 @@ class Logout(MethodView):
     """
     This class logs out a user from the system
     """
+
+    user_obj = User()
+
     def post(self):
         """This method logs out a user"""
         token = request.headers.get('auth_token')
         if not token:
             return jsonify({"message": "Token is missing"}), 401
 
-        decoded = User.decode_token(request.headers.get('auth_token'))
+        decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return User.decode_failure(decoded["error_message"])
         if User.check_login_status(decoded["user_id"]):
