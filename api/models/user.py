@@ -74,8 +74,7 @@ class User(object):
             return {"error_message": "Invalid token. Please log in again.",
                     "state": "Failure"}
 
-    @staticmethod
-    def decode_failure(message):
+    def decode_failure(self, message):
         """
         This method returns an error message when an error is
         encounterd on decoding the token
