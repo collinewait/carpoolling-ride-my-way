@@ -23,6 +23,7 @@ class TestRideTestCase(TestCase):
     user_test = User(123, "Jack", "Ma", "jack@ma.com", "0771462657", "1234")
     user11 = User(1234, "Colline", "Wait", "coll@wait.com", "0771462657", "1234")
     user12 = User(1235, "Vicky", "Von", "vic@vom.com", "0771658399", "1234")
+    user_obj = User()
 
     ride1 = Ride(
         1, "Muk", "Ntinda", depart_date, depart_time, 2
@@ -375,7 +376,7 @@ class TestRideTestCase(TestCase):
         """
         This method tests the status of a user when logged in
         """
-        response = User.check_login_status(1)
+        response = self.user_obj.check_login_status(1)
         self.assertEqual(True, response)
 
     def test_logout_status(self):
@@ -386,7 +387,7 @@ class TestRideTestCase(TestCase):
         """
         self.client().post('/api/v1/users/logout',
                            headers=({"auth_token": self.generate_token()}))
-        response = User.check_login_status(1)
+        response = self.user_obj.check_login_status(1)
         self.assertEqual(False, response)
 
 

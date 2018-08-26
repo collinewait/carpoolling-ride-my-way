@@ -81,8 +81,7 @@ class User(object):
         """
         return jsonify({"message": message}), 401
 
-    @staticmethod
-    def check_login_status(user_id):
+    def check_login_status(self, user_id):
         """
         This method checks whether a user is logged in or not
         If a user is logged in, it returns true and returns

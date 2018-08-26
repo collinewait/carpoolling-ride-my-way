@@ -33,7 +33,7 @@ class RideViews(MethodView):
         if decoded["state"] == "Failure":
             return self.user_obj.decode_failure(decoded["error_message"])
 
-        if User.check_login_status(decoded["user_id"]):
+        if self.user_obj.check_login_status(decoded["user_id"]):
             if not ride_id:
                 request_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
                 ON(ride.user_id = "user".user_id) WHERE "ride".user_id != %s"""
@@ -56,7 +56,7 @@ class RideViews(MethodView):
         decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return self.user_obj.decode_failure(decoded["error_message"])
-        if User.check_login_status(decoded["user_id"]):
+        if self.user_obj.check_login_status(decoded["user_id"]):
             if ride_id:
                 return self.rides_handler.post_request_to_ride_offer(decoded["user_id"], ride_id)
             if not request or not request.json:
@@ -84,7 +84,7 @@ class RequestView(MethodView):
         decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return self.user_obj.decode_failure(decoded["error_message"])
-        if User.check_login_status(decoded["user_id"]):
+        if self.user_obj.check_login_status(decoded["user_id"]):
             return self.request_model.return_all_requests(ride_id)
         return jsonify({"message": "Please login"}), 401
 
@@ -102,7 +102,7 @@ class RequestView(MethodView):
         decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return self.user_obj.decode_failure(decoded["error_message"])
-        if User.check_login_status(decoded["user_id"]):
+        if self.user_obj.check_login_status(decoded["user_id"]):
             return self.request_model.edit_request(ride_id, request_id)
         return jsonify({"message": "Please login"}), 401
 
@@ -125,7 +125,7 @@ class RequestsTaken(MethodView):
         decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return self.user_obj.decode_failure(decoded["error_message"])
-        if User.check_login_status(decoded["user_id"]):
+        if self.user_obj.check_login_status(decoded["user_id"]):
             return self.request.return_all_requests(decoded["user_id"])
         return jsonify({"message": "Please login"}), 401
 
@@ -148,7 +148,7 @@ class RidesGiven(MethodView):
         decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
             return self.user_obj.decode_failure(decoded["error_message"])
-        if User.check_login_status(decoded["user_id"]):
+        if self.user_obj.check_login_status(decoded["user_id"]):
             ride_sql = """SELECT "user".first_name, ride.* FROM "ride" LEFT JOIN "user"\
             ON(ride.user_id = "user".user_id) WHERE "ride".user_id = %s """
             sql_data = (decoded["user_id"], )
