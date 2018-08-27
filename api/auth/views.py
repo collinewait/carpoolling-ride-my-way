@@ -114,7 +114,7 @@ class Logout(MethodView):
 
         decoded = self.user_obj.decode_token(request.headers.get('auth_token'))
         if decoded["state"] == "Failure":
-            return User.decode_failure(decoded["error_message"])
+            return self.user_obj.decode_failure(decoded["error_message"])
         if self.user_obj.check_login_status(decoded["user_id"]):
             logout_info = self.user_obj.update_user_status(False, decoded["user_id"])
             if logout_info["status"] == "success":
