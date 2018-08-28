@@ -82,6 +82,7 @@ class LoginUser(MethodView):
         :param:user: a tuple containing user information
         :return:
         """
+        
         if not user:
             return {"status": "failure",
                     'error_message': 'Please enter valid Email address'}
